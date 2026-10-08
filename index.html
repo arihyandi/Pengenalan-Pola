@@ -570,6 +570,10 @@
   .pred-legend .grade { width: 22px; height: 22px; font-size: 13px; border-radius: 6px; }
   .rank { display: grid; gap: 8px; border-top: 1.5px dashed var(--line); padding-top: 18px; }
   .rank-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+  .rank-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .xlsx-status { margin: 0; font-size: 13px; color: var(--muted); }
+  .xlsx-status.ok { color: var(--good); }
+  .xlsx-status.no { color: var(--bad); }
   .rank-head h3 { margin: 0; font-family: var(--display); font-size: 22px; }
   .muted.small { font-size: 13px; }
 
@@ -762,11 +766,15 @@
     <div class="rank">
       <div class="rank-head">
         <h3>Peringkat kelas</h3>
-        <div class="field inline">
-          <label for="f-rank-kelas">Kelas</label>
-          <select id="f-rank-kelas"></select>
+        <div class="rank-tools">
+          <div class="field inline">
+            <label for="f-rank-kelas">Kelas</label>
+            <select id="f-rank-kelas"></select>
+          </div>
+          <button type="button" class="btn sm" id="btn-xlsx">Unduh raport kelas (Excel)</button>
         </div>
       </div>
+      <p class="xlsx-status" id="xlsx-status" role="status" hidden></p>
       <p class="muted small">Diurutkan dari nilai akhir tertinggi, untuk siswa yang bermain di perangkat ini. Klik nama untuk melihat raportnya.</p>
       <div class="table-wrap" id="rank-body"></div>
     </div>
@@ -1795,16 +1803,14 @@
     sel.innerHTML = kelasList.map((k) => `<option value="${esc(k)}">${esc(k)}</option>`).join("");
     sel.value = kelasList.includes(prev) ? prev : target.kelas;
 
-    const keys = [...new Set(hist.filter((r) => r.selesai && r.kelas === sel.value).map(userKey))];
-    const list = keys.map((k) => reportFor(k, hist))
-      .sort((a, b) => b.final - a.final || b.passed - a.passed || a.nama.localeCompare(b.nama, "id"));
-    let rank = 0;
-    const rankRows = list.map((r, i) => {
-      if (i === 0 || r.final !== list[i - 1].final || r.passed !== list[i - 1].passed) rank = i + 1;
+    const list = rankKelas(sel.value, hist);
+    $("btn-xlsx").disabled = !list.length;
+    $("btn-xlsx").textContent = `Unduh raport kelas ${sel.value} (Excel)`;
+    const rankRows = list.map((r) => {
       const me = r.uk === userKey(target);
       return `
         <tr class="${me ? "me" : ""}">
-          <td class="num rank-no">${rank}</td>
+          <td class="num rank-no">${r.rank}</td>
           <td><button type="button" class="link" data-uk="${esc(r.uk)}">${esc(r.nama)}</button></td>
           <td class="num">${r.passed}/${LEVELS.length}</td>
           <td class="num"><b>${r.final}</b></td>
@@ -1817,6 +1823,116 @@
           <tbody>${rankRows}</tbody>
         </table>`
       : `<p class="empty">Belum ada siswa kelas ${esc(sel.value)} yang menyelesaikan ronde di perangkat ini.</p>`;
+  }
+
+  // Daftar siswa satu kelas, diurutkan dan diberi peringkat (nilai sama = peringkat sama).
+  function rankKelas(kelas, hist) {
+    const keys = [...new Set(hist.filter((r) => r.selesai && r.kelas === kelas).map(userKey))];
+    const list = keys.map((k) => reportFor(k, hist))
+      .sort((a, b) => b.final - a.final || b.passed - a.passed || a.nama.localeCompare(b.nama, "id"));
+    list.forEach((r, i) => {
+      r.rank = i > 0 && r.final === list[i - 1].final && r.passed === list[i - 1].passed ? list[i - 1].rank : i + 1;
+    });
+    return list;
+  }
+
+  // ---------- Raport Excel (.xlsx), satu file per kelas ----------
+  let excelReady = null;
+  function loadExcel() {
+    if (window.ExcelJS) return Promise.resolve(window.ExcelJS);
+    if (!excelReady) {
+      excelReady = new Promise((resolve, reject) => {
+        const sc = document.createElement("script");
+        sc.src = "assets/vendor/exceljs.min.js";
+        sc.onload = () => (window.ExcelJS ? resolve(window.ExcelJS) : reject(new Error("ExcelJS tidak tersedia")));
+        sc.onerror = () => { excelReady = null; reject(new Error("Pustaka Excel gagal dimuat")); };
+        document.head.appendChild(sc);
+      });
+    }
+    return excelReady;
+  }
+
+  const XL_FILL = { A: "FFC8EBD9", B: "FFD6E2FF", C: "FFFFF1BF", D: "FFF9D4D4" };
+  const xlHeader = (row) => {
+    row.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    row.eachCell((c) => {
+      c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF17233A" } };
+      c.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
+    });
+    row.height = 22;
+  };
+  const xlBorder = (row) => row.eachCell((c) => { c.border = { bottom: { style: "thin", color: { argb: "FFD3DCEA" } } }; });
+
+  async function buatExcelKelas(kelas) {
+    const ExcelJS = await loadExcel();
+    const hist = loadHist();
+    const list = rankKelas(kelas, hist);
+    const tanggal = new Date().toLocaleString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    const wb = new ExcelJS.Workbook();
+    wb.creator = "Detektif Pola";
+    wb.created = new Date();
+
+    // Lembar 1: Raport (peringkat kelas)
+    const ws = wb.addWorksheet("Raport", { views: [{ state: "frozen", ySplit: 5 }] });
+    ws.columns = [{ width: 11 }, { width: 28 }, { width: 11 }, { width: 11 }, { width: 11 }, { width: 11 }, { width: 11 },
+      { width: 14 }, { width: 12 }, { width: 10 }, { width: 38 }];
+    ws.getCell("A1").value = `Raport Detektif Pola - Kelas ${kelas}`;
+    ws.getCell("A1").font = { bold: true, size: 16 };
+    ws.getCell("A2").value = `Dibuat ${tanggal} · ${list.length} siswa · data dari perangkat ini`;
+    ws.getCell("A3").value = "Nilai tiap tingkat = ronde terbaik. Nilai akhir = rata-rata 5 tingkat (belum dikerjakan = 0). " +
+      "Predikat: A di atas 90, B di atas 80, C di atas 70, D 70 ke bawah. Lulus tingkat jika benar minimal 85%.";
+    ws.getCell("A3").font = { italic: true, color: { argb: "FF5A6A85" } };
+    const head = ws.getRow(5);
+    head.values = ["Peringkat", "Nama", "Tingkat 1", "Tingkat 2", "Tingkat 3", "Tingkat 4", "Tingkat 5", "Tingkat Lulus", "Nilai Akhir", "Predikat", "Keterangan"];
+    xlHeader(head);
+    list.forEach((r, i) => {
+      const row = ws.getRow(6 + i);
+      row.values = [r.rank, r.nama, ...r.levels.map((l) => (l.tries ? l.nilai : "–")), `${r.passed} dari ${LEVELS.length}`,
+        r.final, r.pred.g, r.pred.t + (r.done < LEVELS.length ? ` (baru ${r.done} dari 5 tingkat)` : "")];
+      row.eachCell((c, col) => { if (col !== 2 && col !== 11) c.alignment = { horizontal: "center" }; });
+      const pc = row.getCell(10);
+      pc.font = { bold: true };
+      pc.fill = { type: "pattern", pattern: "solid", fgColor: { argb: XL_FILL[r.pred.g] } };
+      xlBorder(row);
+    });
+
+    // Lembar 2: Rincian per tingkat
+    const wr = wb.addWorksheet("Rincian per Tingkat", { views: [{ state: "frozen", ySplit: 1 }] });
+    wr.columns = [{ header: "Nama", width: 28 }, { header: "Tingkat", width: 24 }, { header: "Percobaan", width: 11 },
+      { header: "Benar Terbaik", width: 14 }, { header: "Jumlah Soal", width: 12 }, { header: "Nilai", width: 9 },
+      { header: "Predikat", width: 10 }, { header: "Status", width: 18 }];
+    xlHeader(wr.getRow(1));
+    list.forEach((r) => r.levels.forEach((l) => {
+      const row = wr.addRow([r.nama, levelLabel(l.lv), l.tries, l.tries ? l.benar : "–", LEVELS[l.lv].count,
+        l.tries ? l.nilai : "–", l.tries ? l.pred.g : "–", !l.tries ? "Belum dikerjakan" : l.lulus ? "Lulus" : "Belum lulus"]);
+      if (l.tries) row.getCell(7).fill = { type: "pattern", pattern: "solid", fgColor: { argb: XL_FILL[l.pred.g] } };
+      xlBorder(row);
+    }));
+
+    // Lembar 3: semua jawaban siswa kelas ini
+    const wj = wb.addWorksheet("Jawaban", { views: [{ state: "frozen", ySplit: 1 }] });
+    wj.columns = [{ header: "Waktu", width: 20 }, { header: "Nama", width: 26 }, { header: "Tingkat", width: 24 },
+      { header: "Ronde", width: 14 }, { header: "No", width: 6 }, { header: "Jenis Pola", width: 20 },
+      { header: "Soal", width: 60 }, { header: "Jawaban Siswa", width: 22 }, { header: "Kunci", width: 22 }, { header: "Hasil", width: 9 }];
+    xlHeader(wj.getRow(1));
+    hist.filter((r) => r.kelas === kelas).forEach((r) => {
+      r.answers.map((a, i) => ({ ...a, no: a.no || i + 1 })).sort((x, y) => x.no - y.no).forEach((a) => {
+        const row = wj.addRow([fmtTime(a.t), r.nama, levelLabel(r.level), r.id, a.no, a.cat, soalText(a),
+          nameOf(a.pick), nameOf(a.seq[a.hide]), a.ok ? "Benar" : "Salah"]);
+        row.getCell(10).font = { bold: true, color: { argb: a.ok ? "FF188A5C" : "FFC93A3A" } };
+      });
+    });
+
+    const buf = await wb.xlsx.writeBuffer();
+    const url = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Raport Detektif Pola - Kelas ${kelas.replace(/[\\/:*?"<>|]/g, "-")}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    return list.length;
   }
 
   // ---------- Riwayat ----------
@@ -1950,6 +2066,23 @@
   $("btn-raport-saya").addEventListener("click", () => { raportOf = null; $("f-rank-kelas").dataset.chosen = ""; renderRaport(); });
   $("btn-cetak").addEventListener("click", () => { try { window.print(); } catch {} });
   $("f-rank-kelas").addEventListener("change", (e) => { e.target.dataset.chosen = e.target.value; renderRaport(); });
+  $("btn-xlsx").addEventListener("click", async () => {
+    const btn = $("btn-xlsx"), st = $("xlsx-status"), kelas = $("f-rank-kelas").value;
+    btn.disabled = true;
+    st.hidden = false;
+    st.className = "xlsx-status";
+    st.textContent = "Menyiapkan file Excel…";
+    try {
+      const n = await buatExcelKelas(kelas);
+      st.textContent = `File "Raport Detektif Pola - Kelas ${kelas}.xlsx" (${n} siswa) sudah diunduh.`;
+      st.className = "xlsx-status ok";
+    } catch (err) {
+      st.textContent = "File Excel gagal dibuat. Periksa koneksi internet lalu coba lagi.";
+      st.className = "xlsx-status no";
+    } finally {
+      btn.disabled = false;
+    }
+  });
   $("rank-body").addEventListener("click", (e) => {
     const b = e.target.closest("button.link");
     if (!b) return;
