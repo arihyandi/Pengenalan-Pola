@@ -1,7 +1,7 @@
 # Detektif Pola
 
 Game sederhana untuk materi **Berpikir Komputasional: Pengenalan Pola**.
-**Mainkan:** https://arihyandi.github.io/project-1/
+**Mainkan:** https://arihyandi.github.io/Pengenalan-Pola/
 
 Siswa mengamati sebuah urutan (warna, bentuk, arah panah, angka, atau huruf), menemukan aturannya, lalu memilih jawaban yang mengisi kotak bertanda `?`.
 
@@ -37,6 +37,7 @@ Tombol **Raport** menampilkan hasil keseluruhan siswa yang sedang masuk:
 - **Predikat:** A (Sangat baik) untuk nilai di atas 90, B (Baik) di atas 80, C (Cukup) di atas 70, dan D (Perlu bimbingan) untuk 70 ke bawah.
 - **Peringkat kelas:** siswa sekelas yang bermain di perangkat yang sama, diurutkan dari nilai akhir tertinggi. Klik nama untuk membuka raport siswa tersebut.
 - **Cetak raport:** mencetak atau menyimpan raport sebagai PDF lewat dialog cetak browser.
+- **Unduh raport kelas (Excel):** di bagian *Peringkat kelas*, pilih kelas lalu klik tombol ini. Satu file `.xlsx` per kelas (misalnya *Raport Detektif Pola - Kelas 7A.xlsx*) berisi tiga lembar: **Raport** (peringkat, nilai Tingkat 1–5, tingkat lulus, nilai akhir, predikat berwarna), **Rincian per Tingkat**, dan **Jawaban** (semua jawaban siswa kelas itu). Nama kelas digabung tanpa membedakan huruf besar/kecil. File dibuat dari data di perangkat yang dipakai, jadi cara ini tetap bisa dipakai walaupun Google Sheets belum tersambung.
 
 ## Riwayat jawaban
 
@@ -87,7 +88,7 @@ Pengaturan yang perlu dilakukan sekali saja:
 2. Pada **Build and deployment → Source**, pilih **GitHub Actions**.
 3. Gabungkan (merge) perubahan ke `master`, atau jalankan workflow secara manual dari tab **Actions → Publikasi ke GitHub Pages → Run workflow**.
 
-Setelah selesai, game bisa dibuka di https://arihyandi.github.io/project-1/.
+Setelah selesai, game bisa dibuka di https://arihyandi.github.io/Pengenalan-Pola/.
 
 Karena game ini hanya satu file `index.html`, file tersebut juga bisa diunggah ke hosting statis lain (Netlify, Vercel, Google Sites lewat embed, atau LMS sekolah).
 
@@ -97,6 +98,7 @@ Karena game ini hanya satu file `index.html`, file tersebut juga bisa diunggah k
 index.html                     # seluruh game (HTML, CSS, dan JavaScript)
 config.js                      # pengaturan (URL Google Sheets opsional)
 assets/logo-kalam-kudus.png    # logo sekolah (header semua menu dan ikon tab)
+assets/vendor/exceljs.min.js   # pustaka pembuat file Excel (ExcelJS 4.4.0, lisensi MIT)
 apps-script/Code.gs            # penerima riwayat untuk Google Sheets
 .github/workflows/pages.yml    # publikasi otomatis ke GitHub Pages
 ```
