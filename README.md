@@ -39,6 +39,19 @@ Tombol **Raport** menampilkan hasil keseluruhan siswa yang sedang masuk:
 - **Cetak raport:** mencetak atau menyimpan raport sebagai PDF lewat dialog cetak browser.
 - **Unduh raport kelas (Excel):** di bagian *Peringkat kelas*, pilih kelas lalu klik tombol ini. Satu file `.xlsx` per kelas (misalnya *Raport Detektif Pola - Kelas 7A.xlsx*) berisi tiga lembar: **Raport** (peringkat, nilai Tingkat 1–5, tingkat lulus, nilai akhir, predikat berwarna), **Rincian per Tingkat**, dan **Jawaban** (semua jawaban siswa kelas itu). Nama kelas digabung tanpa membedakan huruf besar/kecil. File dibuat dari data di perangkat yang dipakai, jadi cara ini tetap bisa dipakai walaupun Google Sheets belum tersambung.
 
+## Mode guru (PIN)
+
+Data siswa lain hanya bisa dibuka setelah guru menekan **Mode guru** dan memasukkan PIN:
+
+- **Raport:** peringkat kelas, raport siswa lain, dan **Unduh raport kelas (Excel)**.
+- **Riwayat:** riwayat semua siswa di perangkat, filter kelas, **Unduh CSV**, dan **Hapus riwayat**.
+
+Tanpa PIN, siswa hanya bisa melihat raport dan riwayatnya sendiri. Mode guru terkunci lagi saat halaman dimuat ulang atau saat menekan **Keluar**. Setelah 5 kali PIN salah, percobaan berikutnya harus menunggu 30 detik.
+
+PIN tidak ditulis di repositori. `config.js` hanya menyimpan *hash* PIN (SHA-256 berulang dengan salt). Untuk mengganti PIN, buka **Mode guru → Ganti PIN**, ketik PIN baru dua kali, lalu salin baris `pinGuru: …` yang muncul ke `config.js` di GitHub dan klik **Commit changes**.
+
+Catatan: karena situs ini statis, PIN berfungsi sebagai pengaman kelas, bukan keamanan tingkat tinggi. Siswa yang sangat paham teknik tetap bisa membaca data yang tersimpan di perangkat yang sama. Untuk raport yang benar-benar hanya bisa dibuka guru, gunakan Google Sheets.
+
 ## Riwayat jawaban
 
 Setiap jawaban otomatis tercatat: waktu, nama, kelas, tingkat, soal, jawaban siswa, kunci, dan benar/salah.
