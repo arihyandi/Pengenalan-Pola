@@ -94,6 +94,7 @@
     padding-inline: 16px;
     padding-block: 28px 48px;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
   }
 
@@ -170,7 +171,7 @@
   }
   .levels {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 8px;
   }
   .levels button {
@@ -216,7 +217,7 @@
   .levels .lvl-bar { display: flex; gap: 3px; margin-top: 6px; }
   .levels .lvl-bar i { width: 10px; height: 4px; border-radius: 2px; background: var(--line); }
   .levels .lvl-bar i.on { background: var(--marker); }
-  .stats { display: flex; gap: 18px; font-size: 13px; color: var(--muted); }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
   .stats b {
     display: block;
     font-family: var(--mono);
@@ -431,7 +432,7 @@
   .btn.danger { background: var(--bad); color: var(--card); }
   .btn.ghost.danger { background: transparent; color: var(--bad); border-color: var(--bad); }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; }
-  .game { display: grid; gap: 20px; }
+  .game { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .login { max-width: 520px; width: 100%; }
   .muted { margin: 0; color: var(--muted); }
   .login-form { display: grid; gap: 14px; }
@@ -454,9 +455,9 @@
   /* History */
   .hist-summary { margin: 0; color: var(--muted); font-size: 14px; }
   .hist-tools { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
-  .filters { display: flex; flex-wrap: wrap; gap: 12px; }
-  .field.inline { display: flex; align-items: center; gap: 8px; }
-  .field.inline select { width: auto; padding: 8px 10px; font-size: 14px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 12px; min-width: 0; max-width: 100%; }
+  .field.inline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-width: 0; max-width: 100%; }
+  .field.inline select { width: auto; max-width: 100%; padding: 8px 10px; font-size: 14px; }
   .hist-actions { display: flex; flex-wrap: wrap; gap: 8px; }
   .confirm { display: grid; gap: 10px; background: var(--bad-bg); border-radius: 12px; padding: 14px 16px; }
   .confirm p { margin: 0; }
@@ -622,6 +623,8 @@
     .levels .t { font-size: 13.5px; }
     .levels .c { font-size: 11px; }
     .levels .lvl-bar i { width: 6px; }
+    .levels .t { overflow-wrap: anywhere; }
+    .levels button.locked .c { display: none; }
     .navi-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; }
     .navi-btn { height: 32px; font-size: 13px; }
     .legend { margin-left: 0; }

@@ -33,9 +33,11 @@ var LULUS = 0.85; // benar minimal 85% untuk lulus satu tingkat
 // ---------- Penerima data dari game ----------
 
 function doPost(e) {
+  var kelasRaport = null;
   var lock = LockService.getScriptLock();
-  lock.waitLock(20000);
   try {
+    // Simpan data lebih dulu; bagian ini cepat sehingga aman saat banyak siswa mengirim bersamaan.
+    lock.waitLock(30000);
     var d = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var nama = rapikanNama_(d.nama);
@@ -48,11 +50,40 @@ function doPost(e) {
       sheet_(ss, SHEET_RINGKASAN, HEADER_RINGKASAN).appendRow([
         d.mulai, d.selesai, nama, kelas, d.tingkat, d.benar, d.total, d.nilai, d.bintang, d.ronde,
       ].map(clean_));
-      perbaruiRaportKelas_(kelas);
+      tandaiKelas_(kelas);
+      kelasRaport = kelas;
     }
-    return ContentService.createTextOutput('ok');
+    SpreadsheetApp.flush();
   } catch (err) {
     return ContentService.createTextOutput('error: ' + err);
+  } finally {
+    lock.releaseLock();
+  }
+
+  // Perbarui raport. Jika skrip sedang sibuk, kelas tetap ditandai dan diperbarui
+  // oleh kiriman berikutnya atau lewat menu "Perbarui semua raport".
+  if (kelasRaport) perbaruiRaportTertanda_();
+  return ContentService.createTextOutput('ok');
+}
+
+function tandaiKelas_(kelas) {
+  PropertiesService.getScriptProperties().setProperty('perlu:' + kelas, '1');
+}
+
+function perbaruiRaportTertanda_() {
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return;
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var semua = props.getProperties();
+    var kelasList = Object.keys(semua).filter(function (k) { return k.indexOf('perlu:') === 0; })
+      .map(function (k) { return k.slice(6); });
+    if (!kelasList.length) return;
+    var data = kumpulkanNilai_(null);
+    kelasList.forEach(function (kelas) {
+      props.deleteProperty('perlu:' + kelas);
+      if (data[kelas]) tulisRaport_(kelas, data[kelas]);
+    });
   } finally {
     lock.releaseLock();
   }
@@ -72,15 +103,14 @@ function onOpen() {
 }
 
 function perbaruiSemuaRaport() {
+  var props = PropertiesService.getScriptProperties();
+  Object.keys(props.getProperties()).forEach(function (k) {
+    if (k.indexOf('perlu:') === 0) props.deleteProperty(k);
+  });
   var data = kumpulkanNilai_(null);
   Object.keys(data).sort().forEach(function (kelas) {
     tulisRaport_(kelas, data[kelas]);
   });
-}
-
-function perbaruiRaportKelas_(kelas) {
-  var data = kumpulkanNilai_(kelas);
-  if (data[kelas]) tulisRaport_(kelas, data[kelas]);
 }
 
 // ---------- Perhitungan nilai ----------
