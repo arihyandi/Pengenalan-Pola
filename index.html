@@ -9,7 +9,7 @@
 <meta property="og:description" content="Game tebak pola dengan 5 tingkat untuk materi berpikir komputasional.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#17233A">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2317233A'/%3E%3Ccircle cx='30' cy='50' r='13' fill='%23E5484D'/%3E%3Crect x='55' y='37' width='26' height='26' rx='4' fill='%23FFD84D'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/logo-kalam-kudus.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap">
@@ -74,6 +74,7 @@
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     background-color: var(--paper);
@@ -93,17 +94,34 @@
     padding-inline: 16px;
     padding-block: 28px 48px;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
   }
 
   /* Header */
-  header { display: grid; gap: 6px; }
+  header { display: grid; gap: 10px; }
   .eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent);
+  }
+  .eyebrow span { white-space: nowrap; }
+  .eyebrow span + span::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: currentColor;
+    vertical-align: middle;
+    opacity: 0.6;
   }
   h1 {
     font-family: var(--display);
@@ -114,10 +132,34 @@
     text-wrap: balance;
   }
   h1 .hl {
-    background: linear-gradient(transparent 58%, var(--marker) 58%, var(--marker) 90%, transparent 90%);
-    padding-inline: 4px;
+    position: relative;
+    z-index: 0;
+    white-space: nowrap;
   }
-  .lede { margin: 4px 0 0; color: var(--muted); max-width: 60ch; }
+  h1 .hl::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: -0.08em;
+    right: -0.08em;
+    bottom: 0.1em;
+    height: 0.32em;
+    background: var(--marker);
+    border-radius: 0.16em;
+  }
+  .head-top { display: flex; align-items: center; gap: 16px; }
+  .head-main { display: grid; gap: 10px; flex: 1; min-width: 0; }
+  .school-logo { flex: none; width: clamp(80px, 13vw, 124px); height: auto; display: block; }
+  .title-row { display: flex; align-items: center; gap: clamp(12px, 3vw, 22px); }
+  .detective { flex: none; width: clamp(76px, 15vw, 112px); height: auto; display: block; }
+  .det-badge { fill: var(--card); }
+  .det-ring { stroke: var(--accent); opacity: 0.45; }
+  .det-bubble { fill: var(--marker); }
+  @media (prefers-reduced-motion: no-preference) {
+    .detective { animation: det-bob 4s ease-in-out infinite; transform-origin: 50% 100%; }
+  }
+  @keyframes det-bob { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-3deg) translateY(-2px); } }
+  .lede { margin: 0; color: var(--muted); max-width: 60ch; }
 
   /* Toolbar */
   .toolbar {
@@ -129,7 +171,7 @@
   }
   .levels {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 8px;
   }
   .levels button {
@@ -164,10 +206,18 @@
   .levels button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
   .levels button[aria-pressed="true"] .n,
   .levels button[aria-pressed="true"] .c { color: var(--paper); opacity: 0.75; }
+  .levels button.locked { background: var(--tile); border-style: dashed; cursor: not-allowed; opacity: 0.6; }
+  .levels button.locked:hover { border-color: var(--line); }
+  .levels .lock { display: none; width: 11px; height: 11px; margin-left: 5px; vertical-align: -1px; }
+  .levels button.locked .lock { display: inline-block; }
+  .level-hint { margin: -8px 0 0; font-size: 13px; color: var(--muted); }
+  .gate { margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--tile); max-width: 62ch; }
+  .gate.ok { background: var(--good-bg); color: var(--good); }
+  .gate.no { background: var(--bad-bg); color: var(--bad); }
   .levels .lvl-bar { display: flex; gap: 3px; margin-top: 6px; }
   .levels .lvl-bar i { width: 10px; height: 4px; border-radius: 2px; background: var(--line); }
   .levels .lvl-bar i.on { background: var(--marker); }
-  .stats { display: flex; gap: 18px; font-size: 13px; color: var(--muted); }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
   .stats b {
     display: block;
     font-family: var(--mono);
@@ -177,11 +227,36 @@
     line-height: 1.2;
   }
 
-  .pips { display: grid; grid-template-columns: repeat(var(--n, 10), 1fr); gap: 4px; }
-  .pip { height: 8px; border-radius: 4px; background: var(--line); }
-  .pip.ok { background: var(--good); }
-  .pip.no { background: var(--bad); }
-  .pip.now { background: var(--accent); }
+  .navi { display: grid; gap: 10px; }
+  .navi-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .navi-title { font-family: var(--display); font-weight: 700; font-size: 18px; }
+  .navi-note { font-size: 13px; color: var(--muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 0 auto; padding: 0; list-style: none; font-size: 12px; color: var(--muted); }
+  .legend li { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--card); border: 1.5px solid var(--line); }
+  .legend i.ok { background: var(--good); border-color: var(--good); }
+  .legend i.no { background: var(--bad); border-color: var(--bad); }
+  .legend i.skip { background: var(--marker); border-color: var(--marker); }
+  .navi-grid { display: grid; grid-template-columns: repeat(var(--n, 15), minmax(0, 1fr)); gap: 6px; }
+  .navi-btn {
+    height: 36px;
+    min-width: 0;
+    font: 700 14px/1 var(--mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .navi-btn:hover { border-color: var(--accent); }
+  .navi-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .navi-btn.ok { background: var(--good); border-color: var(--good); color: var(--card); }
+  .navi-btn.no { background: var(--bad); border-color: var(--bad); color: var(--card); }
+  .navi-btn.skip { background: var(--marker); border-color: var(--marker); color: #17233A; }
+  .navi-btn[aria-current="step"] { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent); }
+  .skip-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 13px; color: var(--muted); }
+  .resume-note { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--tile); border: 1.5px dashed var(--accent); font-size: 14px; }
 
   /* Board */
   .board {
@@ -337,6 +412,176 @@
   .result p { margin: 0; max-width: 60ch; }
   .result .row { display: flex; flex-wrap: wrap; gap: 10px; }
 
+  /* Login, user bar */
+  .userbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 4px;
+    padding: 8px 8px 8px 14px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+  .who { font-size: 14px; color: var(--muted); }
+  .who b { color: var(--ink); }
+  .userbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn.sm { padding: 9px 14px; font-size: 14px; }
+  .btn.danger { background: var(--bad); color: var(--card); }
+  .btn.ghost.danger { background: transparent; color: var(--bad); border-color: var(--bad); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .game { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .login { max-width: 520px; width: 100%; }
+  .muted { margin: 0; color: var(--muted); }
+  .login-form { display: grid; gap: 14px; }
+  .field { display: grid; gap: 6px; }
+  .field label { font-size: 14px; font-weight: 600; }
+  .field input, .field select {
+    font: 400 16px/1.3 var(--body);
+    color: var(--ink);
+    background: var(--tile);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    width: 100%;
+  }
+  .field input:focus-visible, .field select:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+  .field input[aria-invalid="true"] { border-color: var(--bad); }
+  .form-error { margin: 0; color: var(--bad); font-size: 14px; font-weight: 500; }
+  .login-form .btn { justify-self: start; }
+
+  /* History */
+  .hist-summary { margin: 0; color: var(--muted); font-size: 14px; }
+  .hist-tools { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 12px; min-width: 0; max-width: 100%; }
+  .field.inline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-width: 0; max-width: 100%; }
+  .field.inline select { width: auto; max-width: 100%; padding: 8px 10px; font-size: 14px; }
+  .hist-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .confirm { display: grid; gap: 10px; background: var(--bad-bg); border-radius: 12px; padding: 14px 16px; }
+  .confirm p { margin: 0; }
+  .confirm .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hist-list { display: grid; gap: 10px; }
+  .round { background: var(--tile); border: 1.5px solid var(--line); border-radius: 12px; }
+  .round summary {
+    list-style: none;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1.2fr 1.3fr 1.2fr 1fr auto;
+    gap: 6px 14px;
+    align-items: center;
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  .round summary::-webkit-details-marker { display: none; }
+  .round summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 10px; }
+  .round[open] summary { border-bottom: 1.5px solid var(--line); }
+  .r-date { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .r-who, .r-level { min-width: 0; overflow-wrap: anywhere; }
+  .r-score b { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .pill { justify-self: start; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .pill.ok, .pill.done { background: var(--good-bg); color: var(--good); }
+  .pill.no { background: var(--bad-bg); color: var(--bad); }
+  .pill.open { background: var(--line); color: var(--muted); }
+  .ans-list { list-style: none; margin: 0; padding: 4px 14px 10px; }
+  .ans { display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px dashed var(--line); }
+  .ans:last-child { border-bottom: 0; }
+  .ans-no { font-family: var(--mono); font-size: 13px; color: var(--muted); padding-top: 2px; }
+  .ans-body { display: grid; gap: 6px; min-width: 0; }
+  .ans-cat { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .mini-seq { display: flex; flex-wrap: wrap; gap: 4px; }
+  .mini {
+    min-width: 30px;
+    height: 30px;
+    padding-inline: 4px;
+    display: inline-grid;
+    place-items: center;
+    vertical-align: middle;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .mini svg { width: 22px; height: 22px; display: block; }
+  .mini.q { border: 1.5px dashed var(--accent); color: var(--accent); }
+  .ans-pick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+  .ans-pick > span { display: inline-flex; align-items: center; gap: 6px; }
+  .empty { margin: 0; padding: 18px; text-align: center; color: var(--muted); font-size: 14px; border: 1.5px dashed var(--line); border-radius: 12px; }
+
+  /* Raport */
+  #raport-body { display: grid; gap: 16px; }
+  .raport-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 12px; }
+  .raport-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .raport-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .sum-grade, .sum-box { background: var(--tile); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .sum-grade { display: flex; align-items: center; gap: 14px; }
+  .sum-box { display: grid; align-content: start; gap: 2px; }
+  .label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .sum-title { display: block; font-family: var(--display); font-size: 22px; line-height: 1.15; }
+  .sum-num { font-family: var(--display); font-weight: 800; font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .sum-num small { font-size: 0.5em; color: var(--muted); }
+  .sub { display: block; font-size: 12.5px; color: var(--muted); font-weight: 400; }
+  .grade {
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: 18px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .grade.big { width: 72px; height: 72px; border-radius: 18px; font-size: 46px; flex: none; }
+  .grade-a { background: var(--good); color: var(--card); }
+  .grade-b { background: var(--accent); color: var(--card); }
+  .grade-c { background: var(--marker); color: #17233A; }
+  .grade-d { background: var(--bad); color: var(--card); }
+  .table-wrap { overflow-x: auto; }
+  .raport-table, .rank-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .raport-table { min-width: 580px; }
+  .rank-table { min-width: 480px; }
+  .raport-table td:first-child b, .link { white-space: nowrap; }
+  .raport-table th, .rank-table th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 10px;
+    border-bottom: 1.5px solid var(--line);
+    white-space: nowrap;
+  }
+  .raport-table td, .rank-table td { padding: 10px; border-bottom: 1px dashed var(--line); vertical-align: middle; }
+  .raport-table tr:last-child td, .rank-table tr:last-child td { border-bottom: 0; }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rank-table tr.me td { background: var(--tile); }
+  .rank-no { font-weight: 700; }
+  .link { font: 600 14px/1.3 var(--body); color: var(--accent); background: none; border: 0; padding: 0; cursor: pointer; text-align: left; text-decoration: underline; text-underline-offset: 3px; }
+  .link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .pred-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0; font-size: 13px; color: var(--muted); }
+  .pred-legend > span { display: inline-flex; align-items: center; gap: 6px; }
+  .pred-legend .grade { width: 22px; height: 22px; font-size: 13px; border-radius: 6px; }
+  .rank { display: grid; gap: 8px; border-top: 1.5px dashed var(--line); padding-top: 18px; }
+  .rank-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+  .rank-head h3 { margin: 0; font-family: var(--display); font-size: 22px; }
+  .muted.small { font-size: 13px; }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    .wrap > *:not(#view-raport):not(header), header .lede, header .userbar, header .eyebrow,
+    .raport-actions, .rank .muted.small { display: none !important; }
+    .board { box-shadow: none; border: 0; padding: 0; }
+    .detective { animation: none; }
+    .link { color: #000; text-decoration: none; }
+  }
+
   /* Teacher note */
   .note {
     display: grid;
@@ -378,6 +623,21 @@
     .levels .t { font-size: 13.5px; }
     .levels .c { font-size: 11px; }
     .levels .lvl-bar i { width: 6px; }
+    .levels .t { overflow-wrap: anywhere; }
+    .levels button.locked .c { display: none; }
+    .navi-grid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; }
+    .navi-btn { height: 32px; font-size: 13px; }
+    .legend { margin-left: 0; }
+    .eyebrow { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .eyebrow span + span::before { display: none; }
+    .detective { width: 66px; }
+    .head-top { position: relative; }
+    .school-logo { position: absolute; top: -6px; right: 0; width: 54px; }
+    .eyebrow { padding-right: 62px; }
+    h1 { font-size: 36px; }
+    .round summary { grid-template-columns: 1fr auto; }
+    .r-date { grid-column: 1 / -1; }
+    .hist-tools { align-items: stretch; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -388,25 +648,203 @@
 
 <div class="wrap">
   <header>
-    <span class="eyebrow">Berpikir Komputasional · Pengenalan Pola</span>
-    <h1>Detektif <span class="hl">Pola</span></h1>
+    <div class="head-top">
+      <div class="head-main">
+      <span class="eyebrow"><span>Berpikir Komputasional</span><span>Pengenalan Pola</span></span>
+      <div class="title-row">
+        <svg class="detective" viewBox="0 0 140 140" role="img" aria-label="Gambar detektif mengintip lewat kaca pembesar">
+          <defs>
+            <clipPath id="det-hat-clip"><path d="M45 61 C45 36 95 36 95 61 Z"/></clipPath>
+            <clipPath id="det-badge-clip"><circle cx="70" cy="70" r="64"/></clipPath>
+          </defs>
+          <circle class="det-badge" cx="70" cy="70" r="64"/>
+          <circle class="det-ring" cx="70" cy="70" r="64" fill="none" stroke-width="3" stroke-dasharray="6 7"/>
+          <circle cx="24" cy="48" r="6" fill="#E5484D"/>
+          <rect x="14" y="80" width="11" height="11" rx="2" fill="#2F6BFF" transform="rotate(-12 19.5 85.5)"/>
+          <polygon points="118,62 126,76 110,76" fill="#1FA36B"/>
+          <g clip-path="url(#det-badge-clip)">
+            <g transform="translate(70 146) scale(1.2) translate(-70 -140)">
+            <g>
+              <path d="M28 140 C28 109 46 97 70 97 C94 97 112 109 112 140 Z" fill="#B9773E"/>
+              <path d="M62 97 L70 114 L78 97 Z" fill="#FFFFFF"/>
+              <polygon points="68.2,100 71.8,100 72.5,112 70,115 67.5,112" fill="#E5484D"/>
+              <path d="M57 98 L70 124 L62 100 Z" fill="#8E5626"/>
+              <path d="M83 98 L70 124 L78 100 Z" fill="#8E5626"/>
+              <circle cx="58" cy="122" r="2.6" fill="#6B3F18"/>
+              <circle cx="58" cy="132" r="2.6" fill="#6B3F18"/>
+              <circle cx="82" cy="122" r="2.6" fill="#6B3F18"/>
+              <circle cx="82" cy="132" r="2.6" fill="#6B3F18"/>
+            </g>
+            <rect x="63" y="88" width="14" height="11" rx="3" fill="#EDB98F"/>
+            <circle cx="48" cy="73" r="5.5" fill="#EDB98F"/>
+            <circle cx="92" cy="73" r="5.5" fill="#EDB98F"/>
+            <circle cx="70" cy="71" r="22" fill="#F5CBA7"/>
+            <circle cx="57" cy="80" r="4" fill="#F28B82" opacity="0.55"/>
+            <circle cx="83" cy="80" r="4" fill="#F28B82" opacity="0.55"/>
+            <path d="M56 64 Q61 61 66 64" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M75 61 Q80 56.5 86 60" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="61" cy="71" r="3" fill="#17233A"/>
+            <circle cx="62" cy="70" r="1" fill="#FFFFFF"/>
+            <path d="M63 83 Q69 87.5 76 82" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M45 61 C45 36 95 36 95 61 Z" fill="#7A5230"/>
+            <g clip-path="url(#det-hat-clip)" stroke="#5E3D20" stroke-width="2" opacity="0.75">
+              <line x1="57" y1="36" x2="57" y2="62"/>
+              <line x1="70" y1="36" x2="70" y2="62"/>
+              <line x1="83" y1="36" x2="83" y2="62"/>
+              <line x1="44" y1="50" x2="96" y2="50"/>
+            </g>
+            <path d="M42 60 Q70 70 98 60 Q97 67 70 69.5 Q43 67 42 60 Z" fill="#5E3D20"/>
+            <ellipse cx="65" cy="38.5" rx="5" ry="2.6" fill="#5E3D20" transform="rotate(-20 65 38.5)"/>
+            <ellipse cx="75" cy="38.5" rx="5" ry="2.6" fill="#5E3D20" transform="rotate(20 75 38.5)"/>
+            <circle cx="70" cy="39.5" r="2.6" fill="#7A5230"/>
+            <line x1="89" y1="79" x2="104" y2="97" stroke="#5E3D20" stroke-width="6.5" stroke-linecap="round"/>
+            <circle cx="105" cy="99" r="6.5" fill="#F5CBA7"/>
+            <circle cx="81" cy="70" r="12" fill="#DDEBFF" fill-opacity="0.55" stroke="#F2B01E" stroke-width="4"/>
+            <circle cx="81" cy="70" r="5.5" fill="#17233A"/>
+            <circle cx="83" cy="68" r="1.8" fill="#FFFFFF"/>
+            <path d="M73.5 65 A9 9 0 0 1 78 61" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+            </g>
+          </g>
+          <circle cx="112" cy="32" r="12" class="det-bubble"/>
+          <path d="M107.6 29.2 Q107.6 24.6 112 24.6 Q116.4 24.6 116.4 28.6 Q116.4 31 113.4 32.4 Q112 33 112 35" fill="none" stroke="#17233A" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="112" cy="39.4" r="1.7" fill="#17233A"/>
+        </svg>
+        <h1>Detektif <span class="hl">Pola</span></h1>
+      </div>
+      </div>
+      <img class="school-logo" src="assets/logo-kalam-kudus.png" width="320" height="284" alt="Logo Kalam Kudus">
+    </div>
     <p class="lede">Amati urutannya, temukan aturan yang berulang, lalu pilih yang mengisi kotak bertanda&nbsp;<b>?</b>. Ada 5 tingkat, masing-masing berisi 15–20 soal gambar, angka, dan huruf.</p>
+    <div class="userbar" id="userbar" hidden>
+      <span class="who" id="who"></span>
+      <div class="userbar-actions">
+        <button type="button" class="btn ghost sm" id="btn-main" hidden>Kembali bermain</button>
+        <button type="button" class="btn ghost sm" id="btn-raport">Raport</button>
+        <button type="button" class="btn ghost sm" id="btn-riwayat">Riwayat</button>
+        <button type="button" class="btn ghost sm" id="btn-keluar">Keluar</button>
+      </div>
+    </div>
   </header>
 
+  <section class="board login" id="view-login" aria-labelledby="login-title">
+    <div class="q-head">
+      <span class="chip">Masuk</span>
+      <h2 class="prompt" id="login-title">Tulis nama dan kelasmu dulu</h2>
+      <p class="muted">Nama dan kelas dipakai untuk mencatat riwayat jawabanmu.</p>
+    </div>
+    <form id="login-form" class="login-form" novalidate>
+      <div class="field">
+        <label for="in-nama">Nama lengkap</label>
+        <input id="in-nama" name="nama" type="text" autocomplete="off" maxlength="40" placeholder="contoh: Siti Aminah">
+      </div>
+      <div class="field">
+        <label for="in-kelas">Kelas</label>
+        <input id="in-kelas" name="kelas" type="text" autocomplete="off" maxlength="12" placeholder="contoh: 7A">
+      </div>
+      <p class="form-error" id="login-error" role="alert" hidden></p>
+      <button type="submit" class="btn" id="btn-masuk">Masuk dan mulai</button>
+    </form>
+  </section>
+
+  <section class="board raport" id="view-raport" aria-labelledby="raport-title" hidden>
+    <div class="raport-top">
+      <div class="q-head">
+        <span class="chip">Raport</span>
+        <h2 class="prompt" id="raport-title">Raport Pengenalan Pola</h2>
+        <p class="muted" id="raport-who"></p>
+      </div>
+      <div class="raport-actions">
+        <button type="button" class="btn ghost sm" id="btn-raport-saya" hidden>Raport saya</button>
+        <button type="button" class="btn ghost sm" id="btn-cetak">Cetak raport</button>
+      </div>
+    </div>
+    <div id="raport-body"></div>
+    <div class="rank">
+      <div class="rank-head">
+        <h3>Peringkat kelas</h3>
+        <div class="field inline">
+          <label for="f-rank-kelas">Kelas</label>
+          <select id="f-rank-kelas"></select>
+        </div>
+      </div>
+      <p class="muted small">Diurutkan dari nilai akhir tertinggi, untuk siswa yang bermain di perangkat ini. Klik nama untuk melihat raportnya.</p>
+      <div class="table-wrap" id="rank-body"></div>
+    </div>
+  </section>
+
+  <section class="board history" id="view-riwayat" aria-labelledby="hist-title" hidden>
+    <div class="q-head">
+      <span class="chip">Riwayat</span>
+      <h2 class="prompt" id="hist-title">Riwayat Jawaban</h2>
+      <p class="hist-summary" id="hist-summary"></p>
+    </div>
+    <div class="hist-tools">
+      <div class="filters">
+        <div class="field inline">
+          <label for="f-siapa">Tampilkan</label>
+          <select id="f-siapa">
+            <option value="saya">Hanya saya</option>
+            <option value="semua">Semua siswa di perangkat ini</option>
+          </select>
+        </div>
+        <div class="field inline">
+          <label for="f-kelas">Kelas</label>
+          <select id="f-kelas"></select>
+        </div>
+      </div>
+      <div class="hist-actions">
+        <button type="button" class="btn ghost sm" id="btn-csv">Unduh CSV</button>
+        <button type="button" class="btn ghost sm danger" id="btn-hapus">Hapus riwayat</button>
+      </div>
+    </div>
+    <div class="confirm" id="hapus-confirm" role="alert" hidden>
+      <p id="hapus-text"></p>
+      <div class="row">
+        <button type="button" class="btn danger sm" id="btn-hapus-ya">Ya, hapus</button>
+        <button type="button" class="btn ghost sm" id="btn-hapus-batal">Batal</button>
+      </div>
+    </div>
+    <div class="hist-list" id="hist-list"></div>
+  </section>
+
+  <div class="game" id="view-game" hidden>
   <div class="levels" id="levels" role="group" aria-label="Pilih tingkat"></div>
+  <p class="level-hint" id="level-hint"></p>
 
   <div class="toolbar">
     <div class="stats" aria-live="polite">
-      <div>Soal<b id="st-q">1/15</b></div>
+      <div>Soal ke<b id="st-q">1</b></div>
+      <div>Dijawab<b id="st-done">0/15</b></div>
       <div>Benar<b id="st-ok">0</b></div>
       <div>Beruntun<b id="st-streak">0</b></div>
       <div>Terbaik<b id="st-best">–</b></div>
     </div>
   </div>
 
-  <div class="pips" id="pips" aria-hidden="true"></div>
+  <nav class="navi" aria-label="Daftar soal">
+    <div class="navi-head">
+      <span class="navi-title">Daftar soal</span>
+      <span class="navi-note" id="navi-note"></span>
+      <ul class="legend" aria-hidden="true">
+        <li><i class="ok"></i>Benar</li>
+        <li><i class="no"></i>Salah</li>
+        <li><i class="skip"></i>Dilewati</li>
+        <li><i></i>Belum</li>
+      </ul>
+      <button type="button" class="btn ghost sm" id="btn-selesai">Selesai sekarang</button>
+    </div>
+    <div class="navi-grid" id="navi-grid"></div>
+    <div class="confirm" id="selesai-confirm" role="alert" hidden>
+      <p id="selesai-text"></p>
+      <div class="row">
+        <button type="button" class="btn sm" id="btn-selesai-ya">Ya, selesaikan</button>
+        <button type="button" class="btn ghost sm" id="btn-selesai-batal">Lanjut mengerjakan</button>
+      </div>
+    </div>
+  </nav>
 
   <main class="board" id="board"></main>
+  </div>
 
   <section class="note">
     <div>
@@ -418,7 +856,10 @@
       <ul>
         <li>Minta siswa menyebutkan aturannya dengan kata-kata sendiri sebelum menekan jawaban.</li>
         <li>Baca penjelasan setelah setiap soal, lalu diskusikan.</li>
-        <li>Mulai dari Tingkat 1. Naik tingkat setelah mendapat minimal 2 bintang.</li>
+        <li>Tingkat berikutnya terkunci sampai siswa benar minimal 85% dari seluruh soal di tingkat sebelumnya (Tingkat 1: 13/15, Tingkat 2: 14/16, Tingkat 3: 15/17, Tingkat 4: 16/18).</li>
+        <li>Buka <b>Riwayat → Semua siswa</b> untuk melihat jawaban seluruh siswa yang bermain di perangkat ini, lalu unduh sebagai CSV.</li>
+        <li>Soal yang sulit bisa dilewati dulu. Nomor kuning di <b>Daftar soal</b> menandai soal yang dilewati. Pekerjaan tersimpan otomatis, jadi siswa bisa menutup halaman lalu melanjutkan lagi.</li>
+        <li>Buka <b>Raport</b> untuk melihat nilai akhir, predikat (A di atas 90, B di atas 80, C di atas 70, D 70 ke bawah), dan peringkat kelas.</li>
         <li>Pintasan: tombol <kbd>1</kbd>–<kbd>4</kbd> memilih jawaban, <kbd>Enter</kbd> lanjut.</li>
       </ul>
     </div>
@@ -426,6 +867,7 @@
 </div>
 
 
+<script src="config.js"></script>
 <script>
 (() => {
   // ---------- Data ----------
@@ -888,52 +1330,202 @@
 
   const $ = (id) => document.getElementById(id);
   const board = $("board");
-  let state;
+  const CONFIG = window.DETEKTIF_POLA_CONFIG || {};
+  const SHEETS_URL = String(CONFIG.googleSheetsUrl || "").trim();
+  let state = null;
+  let user = null;
+  let view = "login";
+  let histRows = [];
 
-  const STORE_KEY = "detektif-pola-best-v2";
-  const store = {
-    get() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch { return {}; } },
-    set(v) { try { localStorage.setItem(STORE_KEY, JSON.stringify(v)); } catch {} },
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // ---------- Penyimpanan (localStorage) ----------
+  const ls = {
+    get(k, fb) { try { const v = localStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch { return fb; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+    del(k) { try { localStorage.removeItem(k); } catch {} },
   };
+  const K_USER = "detektif-pola-user";
+  const K_KELAS = "detektif-pola-kelas-terakhir";
+  const K_HIST = "detektif-pola-riwayat";
+  const K_BEST = "detektif-pola-best-v3";
+  // Syarat naik tingkat: benar minimal 85% dari seluruh soal di tingkat sebelumnya.
+  const PASS = 0.85;
+  const need = (lv) => Math.ceil(LEVELS[lv].count * PASS - 1e-9);
+  const bestOf = (lv) => (ls.get(K_BEST, {})[userKey(user)] || {})[lv];
+  const unlocked = (lv) => lv === 0 || (bestOf(lv - 1) ?? -1) >= need(lv - 1);
+  const MAX_ROUNDS = 300;
+  // Kelas digabung tanpa membedakan huruf besar/kecil; nama siswa dicatat apa adanya.
+  const userKey = (u) => String(u.nama).replace(/\s+/g, " ").trim() + "|" + String(u.kelas).replace(/\s+/g, " ").trim().toUpperCase();
+
+  const loadHist = () => {
+    const h = ls.get(K_HIST, []);
+    return Array.isArray(h) ? h : [];
+  };
+  function saveRound(rec) {
+    const h = loadHist();
+    const i = h.findIndex((r) => r.id === rec.id);
+    if (i >= 0) h[i] = rec;
+    else h.push(rec);
+    ls.set(K_HIST, h.slice(-MAX_ROUNDS));
+  }
+
+  const total = () => LEVELS[state.level].count;
+  const levelLabel = (lv) => `Tingkat ${lv + 1} (${LEVELS[lv].name})`;
+  const soalText = (a) => a.seq.map((it, k) => (k === a.hide ? "?" : nameOf(it))).join(", ");
+  const starsOf = (c, n) => (c / n >= 0.9 ? 3 : c / n >= 0.75 ? 2 : c / n >= 0.55 ? 1 : 0);
+  const nilaiOf = (c, n) => Math.round((c / n) * 100);
+  const fmtTime = (ts) => new Date(ts).toLocaleString("id-ID", {
+    day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+
+  // ---------- Google Sheets (opsional) ----------
+  function send(payload) {
+    if (!SHEETS_URL) return;
+    try {
+      fetch(SHEETS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+    } catch {}
+  }
+
+  // ---------- Tampilan ----------
+  function show(next) {
+    view = next;
+    $("view-login").hidden = view !== "login";
+    $("view-game").hidden = view !== "game";
+    $("view-riwayat").hidden = view !== "riwayat";
+    $("view-raport").hidden = view !== "raport";
+    $("userbar").hidden = view === "login";
+    $("btn-main").hidden = view === "game" || view === "login";
+    $("btn-riwayat").hidden = view === "riwayat";
+    $("btn-raport").hidden = view === "raport";
+    if (view === "riwayat") renderHistory();
+    if (view === "raport") renderRaport();
+    if (view === "login") $("in-nama").focus({ preventScroll: true });
+  }
+
+  // ---------- Penyimpanan pekerjaan (soal yang sedang dikerjakan) ----------
+  const K_PROG = "detektif-pola-progress";
+  function progOf(u) {
+    const p = ls.get(K_PROG, {})[userKey(u)];
+    return p && typeof p === "object" && p.levels ? p : { last: 0, levels: {} };
+  }
+  function saveProgress() {
+    if (!user || !state) return;
+    const all = ls.get(K_PROG, {});
+    const p = progOf(user);
+    if (state.done) delete p.levels[state.level];
+    else p.levels[state.level] = state;
+    p.last = state.level;
+    all[userKey(user)] = p;
+    ls.set(K_PROG, all);
+  }
+  function validState(s, level) {
+    return s && !s.done && s.rec && s.level === level && Array.isArray(s.qs) && s.qs.length === LEVELS[level].count &&
+      Array.isArray(s.ans) && s.ans.length === s.qs.length;
+  }
+
+  function enterGame(resume) {
+    $("who").innerHTML = `Masuk sebagai <b>${esc(user.nama)}</b> · Kelas ${esc(user.kelas)}`;
+    show("game");
+    if (resume) render();
+    else {
+      const last = progOf(user).last || 0;
+      newRound(unlocked(last) ? last : 0);
+    }
+  }
 
   $("levels").innerHTML = LEVELS.map((l, i) => `
     <button type="button" id="lv-${i + 1}" data-level="${i}">
-      <span class="n"><span class="w">Tingkat </span>${i + 1}</span>
+      <span class="n"><span class="w">Tingkat </span>${i + 1}<svg class="lock" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="8" rx="2" fill="currentColor"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></span>
       <span class="t">${l.name}</span>
       <span class="c">${l.count} soal</span>
       <span class="lvl-bar" aria-hidden="true">${[0, 1, 2, 3, 4].map((k) => `<i class="${k <= i ? "on" : ""}"></i>`).join("")}</span>
     </button>`).join("");
 
-  const total = () => LEVELS[state.level].count;
-
-  function newRound(level) {
-    state = { level, qs: buildRound(level), i: 0, correct: 0, streak: 0, maxStreak: 0, results: [], answered: null, done: false };
+  // fresh = true memulai ronde baru; selain itu pekerjaan yang tersimpan dilanjutkan.
+  function newRound(level, fresh) {
+    if (!unlocked(level)) return;
+    const saved = progOf(user).levels[level];
+    if (!fresh && validState(saved, level)) {
+      state = saved;
+      state.ans.forEach((x) => { if (x) x.fresh = false; });
+      state.resumed = state.ans.some(Boolean) || state.skipped.some(Boolean);
+    } else {
+      const n = LEVELS[level].count;
+      state = {
+        level, qs: buildRound(level), i: 0, ans: Array(n).fill(null), skipped: Array(n).fill(false),
+        correct: 0, streak: 0, maxStreak: 0, done: false, resumed: false,
+        rec: {
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          nama: user.nama, kelas: user.kelas, level,
+          mulai: Date.now(), selesai: null, benar: 0, total: n, answers: [],
+        },
+      };
+    }
+    saveProgress();
     render();
+  }
+
+  const answeredCount = () => state.ans.filter(Boolean).length;
+  function nextOpen(from) {
+    const n = total();
+    for (let d = 1; d <= n; d++) {
+      const k = (from + d) % n;
+      if (!state.ans[k]) return k;
+    }
+    return -1;
   }
 
   function renderStats() {
     const n = total();
-    document.querySelectorAll("#levels button").forEach((b) =>
-      b.setAttribute("aria-pressed", String(Number(b.dataset.level) === state.level)));
-    $("st-q").textContent = `${Math.min(state.i + 1, n)}/${n}`;
+    document.querySelectorAll("#levels button").forEach((b) => {
+      const lv = Number(b.dataset.level);
+      const open = unlocked(lv);
+      b.setAttribute("aria-pressed", String(lv === state.level));
+      b.classList.toggle("locked", !open);
+      b.disabled = !open;
+      b.querySelector(".c").textContent = open ? `${LEVELS[lv].count} soal` : "Terkunci";
+      b.title = open ? "" : `Terbuka setelah benar minimal ${need(lv - 1)} dari ${LEVELS[lv - 1].count} soal (85%) di Tingkat ${lv}.`;
+    });
+    const firstLocked = LEVELS.findIndex((_, lv) => !unlocked(lv));
+    $("level-hint").innerHTML = firstLocked < 0
+      ? "Semua tingkat sudah terbuka. Hebat!"
+      : `<b>Tingkat ${firstLocked + 1}</b> terbuka setelah kamu benar minimal <b>${need(firstLocked - 1)} dari ${LEVELS[firstLocked - 1].count} soal</b> (85%) di Tingkat ${firstLocked}.`;
+    $("st-q").textContent = state.done ? "–" : `${state.i + 1}`;
+    $("st-done").textContent = `${answeredCount()}/${n}`;
     $("st-ok").textContent = state.correct;
     $("st-streak").textContent = state.streak;
-    const best = store.get()[state.level];
+    const best = (ls.get(K_BEST, {})[userKey(user)] || {})[state.level];
     $("st-best").textContent = best == null ? "–" : `${best}/${n}`;
-    const pips = $("pips");
-    pips.style.setProperty("--n", n);
-    pips.innerHTML = Array.from({ length: n }, (_, k) => {
-      const r = state.results[k];
-      const cls = r === true ? "ok" : r === false ? "no" : k === state.i && !state.done ? "now" : "";
-      return `<div class="pip ${cls}"></div>`;
+
+    const grid = $("navi-grid");
+    grid.style.setProperty("--n", n);
+    grid.innerHTML = state.qs.map((_, k) => {
+      const a = state.ans[k];
+      const st = a ? (a.ok ? "ok" : "no") : state.skipped[k] ? "skip" : "";
+      const label = a ? (a.ok ? "benar" : "salah") : state.skipped[k] ? "dilewati" : "belum dijawab";
+      const now = k === state.i && !state.done;
+      return `<button type="button" class="navi-btn ${st}" data-q="${k}" aria-label="Soal ${k + 1}, ${label}"${now ? ' aria-current="step"' : ""}>${k + 1}</button>`;
     }).join("");
+
+    const open = n - answeredCount();
+    $("btn-selesai").hidden = state.done || open === 0;
+    $("navi-note").textContent = state.done
+      ? "Ronde selesai."
+      : open === n ? "Klik nomor untuk pindah soal." : `${open} soal belum dijawab.`;
+    if (state.done) $("selesai-confirm").hidden = true;
   }
 
   function render() {
     renderStats();
     if (state.done) return renderResult();
     const q = state.qs[state.i];
-    const a = state.answered;
+    const a = state.ans[state.i];
     const ans = q.seq[q.hide];
 
     const seqHTML = q.seq.map((it, k) => {
@@ -953,32 +1545,46 @@
       return `<button type="button" class="opt ${cls}" id="opt-${k}" data-k="${k}" ${a ? "disabled" : ""}><span class="k">${k + 1}</span>${itemHTML(o)}</button>`;
     }).join("");
 
-    const last = state.i === total() - 1;
+    const nxt = nextOpen(state.i);
+    const nextLabel = nxt < 0 ? "Lihat hasil" : nxt === state.i + 1 ? "Soal berikutnya →" : `Lanjut ke soal ${nxt + 1} →`;
     const fb = a ? `
       <div class="feedback ${a.ok ? "ok" : "bad"}" role="status">
         <div>
-          <h3>${a.ok ? pick(["Tepat sekali!", "Hebat, benar!", "Pola ditemukan!"]) : "Belum tepat"}</h3>
+          <h3>${a.ok ? (a.fresh ? pick(["Tepat sekali!", "Hebat, benar!", "Pola ditemukan!"]) : "Sudah dijawab: benar") : (a.fresh ? "Belum tepat" : "Sudah dijawab: belum tepat")}</h3>
           <p>${q.explain}</p>
         </div>
-        <button type="button" class="btn" id="next">${last ? "Lihat hasil" : "Soal berikutnya →"}</button>
+        <button type="button" class="btn" id="next">${nextLabel}</button>
       </div>` : "";
 
+    const canSkip = !a && nxt >= 0;
+    const skipRow = a ? "" : `
+      <div class="skip-row">
+        <button type="button" class="btn ghost sm" id="skip" ${canSkip ? "" : "disabled"}>Lewati dulu</button>
+        <span>${canSkip ? "Kesulitan? Kerjakan soal lain dulu, lalu kembali lewat daftar nomor soal." : "Ini soal terakhir yang belum dijawab."}</span>
+      </div>`;
+
+    const resumeNote = state.resumed ? `
+      <p class="resume-note" role="status">Pekerjaanmu sebelumnya dilanjutkan: <b>${answeredCount()} dari ${total()}</b> soal sudah dijawab.</p>` : "";
+
     board.innerHTML = `
+      ${resumeNote}
       <div class="q-head">
-        <span class="chip">${q.cat}</span>
+        <span class="chip">Soal ${state.i + 1} · ${q.cat}</span>
         <h2 class="prompt">${q.hide === q.seq.length - 1 ? "Apa yang muncul berikutnya?" : "Apa yang hilang di tengah pola?"}</h2>
       </div>
       <div class="seq">${seqHTML}</div>
       <p class="opts-label">Pilih jawaban:</p>
       <div class="opts">${optsHTML}</div>
+      ${skipRow}
       ${fb}`;
 
-    if (a) $("next").focus({ preventScroll: true });
+    if (a && a.fresh) $("next").focus({ preventScroll: true });
   }
 
   function renderResult() {
-    const c = state.correct, n = total(), pct = c / n;
-    const stars = pct >= 0.9 ? 3 : pct >= 0.75 ? 2 : pct >= 0.55 ? 1 : 0;
+    const c = state.correct, n = total();
+    const blank = n - answeredCount();
+    const stars = starsOf(c, n);
     const msg = [
       "Pola memang butuh latihan. Coba lagi dan perhatikan unit yang berulang.",
       "Lumayan! Kamu sudah mulai melihat keteraturannya.",
@@ -987,28 +1593,65 @@
     ][stars];
     const starSVG = (on) => `<svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="${starPts}" fill="${on ? "var(--marker)" : "var(--line)"}" stroke="${on ? "var(--marker)" : "var(--line)"}" stroke-width="4" stroke-linejoin="round"/></svg>`;
     const next = state.level + 1 < LEVELS.length ? state.level + 1 : null;
+    const req = need(state.level);
+    const passed = c >= req;
+    const gate = next === null
+      ? (passed ? `<p class="gate ok">Kamu sudah menamatkan semua tingkat dengan benar ${nilaiOf(c, n)}%. Luar biasa!</p>` : "")
+      : passed
+        ? `<p class="gate ok">Selamat! Kamu benar <b>${nilaiOf(c, n)}%</b> dan membuka <b>Tingkat ${next + 1} (${LEVELS[next].name})</b>.</p>`
+        : unlocked(next)
+          ? `<p class="gate">Tingkat ${next + 1} sudah terbuka dari hasil sebelumnya. Untuk lulus ronde ini perlu benar minimal ${req} dari ${n} soal (85%).</p>`
+          : `<p class="gate no">Untuk membuka <b>Tingkat ${next + 1}</b>, kamu perlu benar minimal <b>${req} dari ${n} soal</b> (85%). Kamu benar ${c}, kurang ${req - c} soal lagi. Coba lagi ya!</p>`;
     board.innerHTML = `
       <div class="result">
         <span class="chip">Tingkat ${state.level + 1} · ${LEVELS[state.level].name} selesai</span>
         <div class="big">${c}<small> / ${n}</small></div>
         <div class="stars" aria-label="${stars} dari 3 bintang">${[0, 1, 2].map((k) => starSVG(k < stars)).join("")}</div>
-        <p>${msg} Rangkaian benar terpanjang: <b>${state.maxStreak}</b>.</p>
+        ${gate}
+        <p>${msg} Nilai: <b>${nilaiOf(c, n)}</b>. Rangkaian benar terpanjang: <b>${state.maxStreak}</b>.${blank ? ` <b>${blank}</b> soal tidak dijawab dan dihitung salah.` : ""} Hasil ini sudah tersimpan di riwayat.</p>
         <div class="row">
           <button type="button" class="btn" id="again">Main lagi</button>
-          ${next !== null && stars >= 2 ? `<button type="button" class="btn ghost" id="up">Naik ke Tingkat ${next + 1} (${LEVELS[next].name})</button>` : ""}
+          ${next !== null && unlocked(next) ? `<button type="button" class="btn ghost" id="up">Naik ke Tingkat ${next + 1} (${LEVELS[next].name})</button>` : ""}
+          <button type="button" class="btn ghost" id="to-raport">Lihat raport</button>
+          <button type="button" class="btn ghost" id="to-hist">Lihat riwayat</button>
         </div>
       </div>`;
-    $("again").onclick = () => newRound(state.level);
+    $("again").onclick = () => newRound(state.level, true);
     if ($("up")) $("up").onclick = () => newRound(next);
+    $("to-hist").onclick = () => show("riwayat");
+    $("to-raport").onclick = () => { raportOf = null; $("f-rank-kelas").dataset.chosen = ""; show("raport"); };
+  }
+
+  function clearFresh() {
+    state.resumed = false;
+    state.ans.forEach((a) => { if (a) a.fresh = false; });
+  }
+
+  function goTo(k) {
+    if (state.done || k < 0 || k >= total()) return;
+    clearFresh();
+    $("selesai-confirm").hidden = true;
+    state.i = k;
+    saveProgress();
+    render();
+  }
+
+  function skip() {
+    if (state.done || state.ans[state.i]) return;
+    const k = nextOpen(state.i);
+    if (k < 0) return;
+    state.skipped[state.i] = true;
+    goTo(k);
   }
 
   function choose(k) {
-    if (state.done || state.answered) return;
+    if (state.done || state.ans[state.i]) return;
+    clearFresh();
     const q = state.qs[state.i];
     const choice = key(q.opts[k]);
     const ok = choice === q.ansKey;
-    state.answered = { choice, ok };
-    state.results[state.i] = ok;
+    state.ans[state.i] = { choice, ok, fresh: true };
+    state.skipped[state.i] = false;
     if (ok) {
       state.correct++;
       state.streak++;
@@ -1016,46 +1659,361 @@
     } else {
       state.streak = 0;
     }
+
+    const rec = state.rec;
+    const entry = { t: Date.now(), no: state.i + 1, cat: q.cat, seq: q.seq, hide: q.hide, pick: q.opts[k], ok };
+    rec.answers.push(entry);
+    rec.benar = state.correct;
+    saveRound(rec);
+    send({
+      type: "jawaban", waktu: fmtTime(entry.t), nama: rec.nama, kelas: rec.kelas, tingkat: levelLabel(rec.level),
+      ronde: rec.id, no: entry.no, jenis: q.cat, soal: soalText(entry),
+      jawaban: nameOf(entry.pick), kunci: nameOf(q.seq[q.hide]), hasil: ok ? "Benar" : "Salah",
+    });
+    saveProgress();
+    render();
+  }
+
+  function finish() {
+    state.done = true;
+    clearFresh();
+    const rec = state.rec;
+    rec.selesai = Date.now();
+    saveRound(rec);
+    send({
+      type: "ringkasan", mulai: fmtTime(rec.mulai), selesai: fmtTime(rec.selesai), nama: rec.nama, kelas: rec.kelas,
+      tingkat: levelLabel(rec.level), benar: rec.benar, total: rec.total, nilai: nilaiOf(rec.benar, rec.total),
+      bintang: starsOf(rec.benar, rec.total), ronde: rec.id,
+    });
+    const best = ls.get(K_BEST, {});
+    const mine = best[userKey(user)] || {};
+    if (mine[state.level] == null || state.correct > mine[state.level]) {
+      mine[state.level] = state.correct;
+      best[userKey(user)] = mine;
+      ls.set(K_BEST, best);
+    }
+    saveProgress();
     render();
   }
 
   function next() {
-    if (!state.answered) return;
-    state.answered = null;
-    if (state.i === total() - 1) {
-      state.done = true;
-      const best = store.get();
-      if (best[state.level] == null || state.correct > best[state.level]) {
-        best[state.level] = state.correct;
-        store.set(best);
-      }
-    } else {
-      state.i++;
-    }
-    render();
+    if (!state.ans[state.i]) return;
+    const k = nextOpen(state.i);
+    if (k < 0) finish();
+    else goTo(k);
   }
+
+  // ---------- Raport ----------
+  // Predikat: di atas 90 = A, di atas 80 = B, di atas 70 = C, selain itu D.
+  function predikat(n) {
+    if (n > 90) return { g: "A", t: "Sangat baik", c: "a" };
+    if (n > 80) return { g: "B", t: "Baik", c: "b" };
+    if (n > 70) return { g: "C", t: "Cukup", c: "c" };
+    return { g: "D", t: "Perlu bimbingan", c: "d" };
+  }
+  let raportOf = null; // null = siswa yang sedang masuk
+
+  function reportFor(uk, hist) {
+    const rounds = hist.filter((r) => r.selesai && userKey(r) === uk);
+    const latest = rounds.reduce((a, r) => (!a || r.selesai > a.selesai ? r : a), null);
+    const levels = LEVELS.map((L, lv) => {
+      const rs = rounds.filter((r) => r.level === lv);
+      if (!rs.length) return { lv, tries: 0, nilai: 0 };
+      const best = rs.reduce((a, r) => (r.benar / r.total > a.benar / a.total ? r : a));
+      const nilai = nilaiOf(best.benar, best.total);
+      return { lv, tries: rs.length, benar: best.benar, total: best.total, nilai, lulus: best.benar >= need(lv), pred: predikat(nilai) };
+    });
+    const final = Math.round(levels.reduce((sum, l) => sum + l.nilai, 0) / LEVELS.length);
+    return {
+      uk, nama: latest ? latest.nama : "", kelas: latest ? latest.kelas : "", levels, final, pred: predikat(final),
+      done: levels.filter((l) => l.tries).length, passed: levels.filter((l) => l.lulus).length,
+      last: latest ? latest.selesai : null,
+    };
+  }
+
+  const gradeHTML = (p, big) => `<span class="grade grade-${p.c}${big ? " big" : ""}" title="${p.t}">${p.g}</span>`;
+
+  function renderRaport() {
+    const hist = loadHist();
+    const target = raportOf || { nama: user.nama, kelas: user.kelas };
+    const rp = reportFor(userKey(target), hist);
+    const isMe = userKey(target) === userKey(user);
+    $("btn-raport-saya").hidden = isMe;
+    $("raport-who").innerHTML = `<b>${esc(target.nama)}</b> · Kelas ${esc(target.kelas)} · dicetak ${new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`;
+
+    const rows = rp.levels.map((l) => {
+      const L = LEVELS[l.lv];
+      const status = !l.tries
+        ? `<span class="pill open">Belum dikerjakan</span>`
+        : l.lulus ? `<span class="pill done">Lulus</span>` : `<span class="pill no">Belum lulus</span>`;
+      return `
+        <tr>
+          <td><b>Tingkat ${l.lv + 1}</b><span class="sub">${L.name}</span></td>
+          <td class="num">${l.tries}×</td>
+          <td class="num">${l.tries ? `${l.benar}/${l.total}` : "–"}</td>
+          <td class="num"><b>${l.tries ? l.nilai : "–"}</b></td>
+          <td>${l.tries ? gradeHTML(l.pred) : "–"}</td>
+          <td>${status}</td>
+        </tr>`;
+    }).join("");
+
+    const complete = rp.done === LEVELS.length;
+    $("raport-body").innerHTML = `
+      <div class="raport-summary">
+        <div class="sum-grade">
+          ${gradeHTML(rp.pred, true)}
+          <div>
+            <span class="label">Predikat akhir</span>
+            <b class="sum-title">${rp.pred.t}</b>
+          </div>
+        </div>
+        <div class="sum-box">
+          <span class="label">Nilai akhir</span>
+          <b class="sum-num">${rp.final}</b>
+          <span class="sub">Rata-rata nilai terbaik di 5 tingkat${complete ? "" : ". Tingkat yang belum dikerjakan bernilai 0"}.</span>
+        </div>
+        <div class="sum-box">
+          <span class="label">Tingkat lulus (≥85%)</span>
+          <b class="sum-num">${rp.passed}<small>/${LEVELS.length}</small></b>
+          <span class="sub">${complete ? "Semua tingkat sudah dikerjakan." : `Sudah dikerjakan ${rp.done} dari ${LEVELS.length} tingkat.`}</span>
+        </div>
+      </div>
+      ${rp.done ? "" : `<p class="empty">Belum ada ronde yang selesai. Selesaikan minimal satu ronde untuk mengisi raport.</p>`}
+      <div class="table-wrap">
+        <table class="raport-table">
+          <thead><tr><th>Tingkat</th><th>Percobaan</th><th>Benar terbaik</th><th>Nilai</th><th>Predikat</th><th>Status</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <p class="pred-legend">${[[95, "di atas 90"], [85, "di atas 80"], [75, "di atas 70"], [70, "70 ke bawah"]].map(([n, t]) => `<span>${gradeHTML(predikat(n))} ${predikat(n).t} (${t})</span>`).join("")}</p>`;
+
+    // Peringkat kelas
+    const sel = $("f-rank-kelas");
+    const kelasList = [...new Set(hist.filter((r) => r.selesai).map((r) => r.kelas))].sort();
+    if (!kelasList.includes(target.kelas)) kelasList.unshift(target.kelas);
+    const prev = sel.dataset.chosen || target.kelas;
+    sel.innerHTML = kelasList.map((k) => `<option value="${esc(k)}">${esc(k)}</option>`).join("");
+    sel.value = kelasList.includes(prev) ? prev : target.kelas;
+
+    const keys = [...new Set(hist.filter((r) => r.selesai && r.kelas === sel.value).map(userKey))];
+    const list = keys.map((k) => reportFor(k, hist))
+      .sort((a, b) => b.final - a.final || b.passed - a.passed || a.nama.localeCompare(b.nama, "id"));
+    let rank = 0;
+    const rankRows = list.map((r, i) => {
+      if (i === 0 || r.final !== list[i - 1].final || r.passed !== list[i - 1].passed) rank = i + 1;
+      const me = r.uk === userKey(target);
+      return `
+        <tr class="${me ? "me" : ""}">
+          <td class="num rank-no">${rank}</td>
+          <td><button type="button" class="link" data-uk="${esc(r.uk)}">${esc(r.nama)}</button></td>
+          <td class="num">${r.passed}/${LEVELS.length}</td>
+          <td class="num"><b>${r.final}</b></td>
+          <td>${gradeHTML(r.pred)}</td>
+        </tr>`;
+    }).join("");
+    $("rank-body").innerHTML = list.length
+      ? `<table class="rank-table">
+          <thead><tr><th>Peringkat</th><th>Nama</th><th>Tingkat lulus</th><th>Nilai akhir</th><th>Predikat</th></tr></thead>
+          <tbody>${rankRows}</tbody>
+        </table>`
+      : `<p class="empty">Belum ada siswa kelas ${esc(sel.value)} yang menyelesaikan ronde di perangkat ini.</p>`;
+  }
+
+  // ---------- Riwayat ----------
+  function renderHistory() {
+    const all = loadHist().slice().reverse();
+    const siapa = $("f-siapa").value;
+    const fk = $("f-kelas");
+    const kelasList = [...new Set(all.map((r) => r.kelas))].sort();
+    const prev = fk.value;
+    fk.innerHTML = `<option value="">Semua kelas</option>` + kelasList.map((k) => `<option value="${esc(k)}">${esc(k)}</option>`).join("");
+    fk.value = kelasList.includes(prev) ? prev : "";
+    fk.disabled = siapa === "saya";
+
+    histRows = siapa === "saya"
+      ? all.filter((r) => userKey(r) === userKey(user))
+      : all.filter((r) => !fk.value || r.kelas === fk.value);
+
+    $("hapus-confirm").hidden = true;
+    $("btn-csv").disabled = histRows.length === 0;
+    $("btn-hapus").disabled = histRows.length === 0;
+
+    const done = histRows.filter((r) => r.selesai);
+    const nAns = histRows.reduce((s, r) => s + r.answers.length, 0);
+    const avg = done.length ? Math.round(done.reduce((s, r) => s + nilaiOf(r.benar, r.total), 0) / done.length) : null;
+    const where = SHEETS_URL ? "Riwayat juga dikirim ke Google Sheets guru." : "Riwayat tersimpan di perangkat ini.";
+    $("hist-summary").textContent = histRows.length
+      ? `${histRows.length} ronde · ${nAns} jawaban${avg == null ? "" : ` · rata-rata nilai ${avg}`}. ${where}`
+      : where;
+
+    const shown = histRows.slice(0, 100);
+    $("hist-list").innerHTML = shown.length
+      ? shown.map(roundHTML).join("") + (histRows.length > 100 ? `<p class="empty">Menampilkan 100 ronde terbaru. Unduh CSV untuk melihat semuanya.</p>` : "")
+      : `<p class="empty">${siapa === "saya" ? "Belum ada riwayat. Jawab soal pertama untuk mulai mencatat." : "Belum ada riwayat di perangkat ini."}</p>`;
+  }
+
+  function roundHTML(r) {
+    const n = r.answers.length;
+    const score = r.selesai
+      ? `<b>${r.benar}/${r.total}</b> · nilai ${nilaiOf(r.benar, r.total)}`
+      : `<b>${r.benar}/${n}</b> dijawab`;
+    return `
+      <details class="round" data-id="${esc(r.id)}">
+        <summary>
+          <span class="r-date">${fmtTime(r.mulai)}</span>
+          <span class="r-who"><b>${esc(r.nama)}</b> · ${esc(r.kelas)}</span>
+          <span class="r-level">${levelLabel(r.level)}</span>
+          <span class="r-score">${score}</span>
+          <span class="pill ${r.selesai ? "done" : "open"}">${r.selesai ? "Selesai" : "Belum selesai"}</span>
+        </summary>
+        <ol class="ans-list"></ol>
+      </details>`;
+  }
+
+  function ansHTML(a, i) {
+    const mini = (it) => `<span class="mini">${itemHTML(it)}</span>`;
+    const label = (it) => (it.t === "n" || it.t === "l" ? "" : " " + esc(nameOf(it)));
+    const seq = a.seq.map((it, k) => (k === a.hide ? `<span class="mini q">?</span>` : mini(it))).join("");
+    return `
+      <li class="ans">
+        <span class="ans-no">${a.no || i + 1}</span>
+        <div class="ans-body">
+          <span class="ans-cat">${esc(a.cat)}</span>
+          <div class="mini-seq">${seq}</div>
+          <div class="ans-pick">
+            <span>Jawaban: ${mini(a.pick)}${label(a.pick)}</span>
+            ${a.ok ? "" : `<span>Kunci: ${mini(a.seq[a.hide])}${label(a.seq[a.hide])}</span>`}
+          </div>
+        </div>
+        <span class="pill ${a.ok ? "ok" : "no"}">${a.ok ? "Benar" : "Salah"}</span>
+      </li>`;
+  }
+
+  $("hist-list").addEventListener("toggle", (e) => {
+    const d = e.target;
+    if (!d.open || d.dataset.filled) return;
+    const r = histRows.find((x) => x.id === d.dataset.id);
+    if (!r) return;
+    const list = r.answers.map((a, i) => ({ ...a, no: a.no || i + 1 })).sort((x, y) => x.no - y.no);
+    d.querySelector(".ans-list").innerHTML = list.map(ansHTML).join("");
+    d.dataset.filled = "1";
+  }, true);
+
+  function downloadCSV() {
+    const rows = [["Waktu", "Nama", "Kelas", "Tingkat", "Ronde", "No", "Jenis Pola", "Soal", "Jawaban Siswa", "Kunci", "Hasil"]];
+    histRows.slice().reverse().forEach((r) => r.answers.forEach((a, i) => rows.push([
+      fmtTime(a.t), r.nama, r.kelas, levelLabel(r.level), r.id, a.no || i + 1, a.cat, soalText(a),
+      nameOf(a.pick), nameOf(a.seq[a.hide]), a.ok ? "Benar" : "Salah",
+    ])));
+    const csv = "﻿" + rows.map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(";")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `riwayat-detektif-pola-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  // ---------- Event ----------
+  $("login-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nama = $("in-nama").value.replace(/\s+/g, " ").trim();
+    const kelas = $("in-kelas").value.replace(/\s+/g, " ").trim().toUpperCase();
+    let err = "", field = null;
+    if (nama.length < 2) { err = nama ? "Nama terlalu pendek. Tulis minimal 2 huruf." : "Nama belum diisi."; field = "in-nama"; }
+    else if (!kelas) { err = "Kelas belum diisi. Contoh: 7A."; field = "in-kelas"; }
+    $("login-error").textContent = err;
+    $("login-error").hidden = !err;
+    ["in-nama", "in-kelas"].forEach((id) => $(id).setAttribute("aria-invalid", String(id === field)));
+    if (err) return $(field).focus();
+    user = { nama, kelas };
+    ls.set(K_USER, user);
+    ls.set(K_KELAS, kelas);
+    enterGame(false);
+  });
+
+  $("btn-keluar").addEventListener("click", () => {
+    user = null;
+    state = null;
+    raportOf = null;
+    $("f-rank-kelas").dataset.chosen = "";
+    ls.del(K_USER);
+    $("in-nama").value = "";
+    $("in-kelas").value = ls.get(K_KELAS, "");
+    $("login-error").hidden = true;
+    show("login");
+  });
+  $("btn-riwayat").addEventListener("click", () => show("riwayat"));
+  $("btn-raport").addEventListener("click", () => { raportOf = null; $("f-rank-kelas").dataset.chosen = ""; show("raport"); });
+  $("btn-raport-saya").addEventListener("click", () => { raportOf = null; $("f-rank-kelas").dataset.chosen = ""; renderRaport(); });
+  $("btn-cetak").addEventListener("click", () => { try { window.print(); } catch {} });
+  $("f-rank-kelas").addEventListener("change", (e) => { e.target.dataset.chosen = e.target.value; renderRaport(); });
+  $("rank-body").addEventListener("click", (e) => {
+    const b = e.target.closest("button.link");
+    if (!b) return;
+    const r = loadHist().find((x) => userKey(x) === b.dataset.uk);
+    if (!r) return;
+    raportOf = { nama: r.nama, kelas: r.kelas };
+    $("f-rank-kelas").dataset.chosen = r.kelas;
+    renderRaport();
+    $("view-raport").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+  $("btn-main").addEventListener("click", () => { show("game"); render(); });
+  $("f-siapa").addEventListener("change", renderHistory);
+  $("f-kelas").addEventListener("change", renderHistory);
+  $("btn-csv").addEventListener("click", downloadCSV);
+  $("btn-hapus").addEventListener("click", () => {
+    $("hapus-text").textContent = `Hapus ${histRows.length} ronde yang sedang ditampilkan dari perangkat ini? Data yang sudah terhapus tidak bisa dikembalikan.`;
+    $("hapus-confirm").hidden = false;
+  });
+  $("btn-hapus-batal").addEventListener("click", () => { $("hapus-confirm").hidden = true; });
+  $("btn-hapus-ya").addEventListener("click", () => {
+    const ids = new Set(histRows.map((r) => r.id));
+    ls.set(K_HIST, loadHist().filter((r) => !ids.has(r.id)));
+    renderHistory();
+  });
 
   board.addEventListener("click", (e) => {
     const opt = e.target.closest(".opt");
     if (opt && !opt.disabled) return choose(Number(opt.dataset.k));
-    if (e.target.closest("#next")) next();
+    if (e.target.closest("#next")) return next();
+    if (e.target.closest("#skip")) skip();
   });
+  $("navi-grid").addEventListener("click", (e) => {
+    const b = e.target.closest(".navi-btn");
+    if (b) goTo(Number(b.dataset.q));
+  });
+  $("btn-selesai").addEventListener("click", () => {
+    const open = total() - answeredCount();
+    $("selesai-text").textContent = `Masih ada ${open} soal yang belum dijawab. Soal yang belum dijawab dihitung salah. Selesaikan ronde sekarang?`;
+    $("selesai-confirm").hidden = false;
+  });
+  $("btn-selesai-batal").addEventListener("click", () => { $("selesai-confirm").hidden = true; });
+  $("btn-selesai-ya").addEventListener("click", () => { $("selesai-confirm").hidden = true; finish(); });
   $("levels").addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b) newRound(Number(b.dataset.level));
   });
   document.addEventListener("keydown", (e) => {
-    if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (/^[1-4]$/.test(e.key) && !state.answered && !state.done) choose(Number(e.key) - 1);
-    else if (e.key === "Enter" && state.answered && document.activeElement?.id !== "next") next();
+    if (view !== "game" || !state || state.done || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    const a = state.ans[state.i];
+    if (/^[1-4]$/.test(e.key) && !a) choose(Number(e.key) - 1);
+    else if (e.key === "Enter" && a && document.activeElement?.id !== "next" && !document.activeElement?.closest?.("button")) next();
   });
 
   function start(data) {
+    $("in-kelas").value = ls.get(K_KELAS, "");
+    const u = ls.get(K_USER, null);
+    if (!u || typeof u.nama !== "string" || typeof u.kelas !== "string") return show("login");
+    user = u;
     const s = data && data.state;
-    if (s && Number.isInteger(s.level) && LEVELS[s.level] && Array.isArray(s.qs) && s.qs.length === LEVELS[s.level].count) {
+    if (s && Number.isInteger(s.level) && LEVELS[s.level] && validState(s, s.level)) {
       state = s;
-      render();
-    } else newRound(0);
+      enterGame(true);
+    } else enterGame(false);
   }
   window.claude?.hot?.snapshot?.(() => ({ state }));
   window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
