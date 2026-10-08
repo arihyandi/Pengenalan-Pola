@@ -1,7 +1,7 @@
 # Detektif Pola
 
 Game sederhana untuk materi **Berpikir Komputasional: Pengenalan Pola**.
-**Mainkan:** https://arihyandi.github.io/project-1/
+**Mainkan:** https://arihyandi.github.io/Pengenalan-Pola/
 
 Siswa mengamati sebuah urutan (warna, bentuk, arah panah, angka, atau huruf), menemukan aturannya, lalu memilih jawaban yang mengisi kotak bertanda `?`.
 
@@ -87,7 +87,7 @@ Pengaturan yang perlu dilakukan sekali saja:
 2. Pada **Build and deployment → Source**, pilih **GitHub Actions**.
 3. Gabungkan (merge) perubahan ke `master`, atau jalankan workflow secara manual dari tab **Actions → Publikasi ke GitHub Pages → Run workflow**.
 
-Setelah selesai, game bisa dibuka di https://arihyandi.github.io/project-1/.
+Setelah selesai, game bisa dibuka di https://arihyandi.github.io/Pengenalan-Pola/.
 
 Karena game ini hanya satu file `index.html`, file tersebut juga bisa diunggah ke hosting statis lain (Netlify, Vercel, Google Sites lewat embed, atau LMS sekolah).
 
