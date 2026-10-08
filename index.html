@@ -512,6 +512,20 @@
   .ans-pick > span { display: inline-flex; align-items: center; gap: 6px; }
   .empty { margin: 0; padding: 18px; text-align: center; color: var(--muted); font-size: 14px; border: 1.5px dashed var(--line); border-radius: 12px; }
 
+  /* Mode guru */
+  .guru-panel { display: grid; gap: 10px; background: var(--card); border: 1.5px dashed var(--accent); border-radius: 12px; padding: 14px; }
+  .pin-form { display: grid; gap: 10px; max-width: 360px; }
+  .guru-panel .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .guru-on { display: grid; gap: 10px; }
+  .guru-on p { margin: 0; font-size: 14px; }
+  .pin-hasil { display: grid; gap: 8px; }
+  .pin-hasil p { font-size: 13px; color: var(--muted); }
+  .pin-hasil textarea { width: 100%; font: 12px/1.4 var(--mono); color: var(--ink); background: var(--tile); border: 1.5px solid var(--line); border-radius: 8px; padding: 8px; resize: vertical; }
+  .pin-hasil .btn { justify-self: start; }
+  #btn-guru.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .guru-note { margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--tile); border: 1.5px dashed var(--line); font-size: 14px; color: var(--muted); }
+  .rank-guru { display: grid; gap: 8px; }
+
   /* Raport */
   #raport-body { display: grid; gap: 16px; }
   .raport-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: start; gap: 12px; }
@@ -725,7 +739,45 @@
         <button type="button" class="btn ghost sm" id="btn-main" hidden>Kembali bermain</button>
         <button type="button" class="btn ghost sm" id="btn-raport">Raport</button>
         <button type="button" class="btn ghost sm" id="btn-riwayat">Riwayat</button>
+        <button type="button" class="btn ghost sm" id="btn-guru">Mode guru</button>
         <button type="button" class="btn ghost sm" id="btn-keluar">Keluar</button>
+      </div>
+    </div>
+    <div class="guru-panel" id="guru-panel" hidden>
+      <form id="pin-form" class="pin-form" novalidate>
+        <div class="field">
+          <label for="in-pin">PIN guru</label>
+          <input id="in-pin" type="password" inputmode="numeric" autocomplete="off" maxlength="12" placeholder="Masukkan PIN">
+        </div>
+        <div class="row">
+          <button type="submit" class="btn sm" id="btn-pin">Buka mode guru</button>
+          <button type="button" class="btn ghost sm" id="btn-pin-batal">Batal</button>
+        </div>
+        <p class="form-error" id="pin-error" role="alert" hidden></p>
+      </form>
+      <div class="guru-on" id="guru-on" hidden>
+        <p><b>Mode guru aktif.</b> Peringkat kelas, raport Excel, dan riwayat semua siswa terbuka. Mode guru terkunci lagi saat halaman dimuat ulang atau saat keluar.</p>
+        <div class="row">
+          <button type="button" class="btn ghost sm" id="btn-ganti-pin">Ganti PIN</button>
+          <button type="button" class="btn ghost sm" id="btn-guru-kunci">Kunci mode guru</button>
+        </div>
+        <form id="pin-baru-form" class="pin-form" novalidate hidden>
+          <div class="field">
+            <label for="in-pin-baru">PIN baru (4–12 angka)</label>
+            <input id="in-pin-baru" type="password" inputmode="numeric" autocomplete="off" maxlength="12">
+          </div>
+          <div class="field">
+            <label for="in-pin-ulang">Ulangi PIN baru</label>
+            <input id="in-pin-ulang" type="password" inputmode="numeric" autocomplete="off" maxlength="12">
+          </div>
+          <div class="row"><button type="submit" class="btn sm" id="btn-pin-buat">Buat baris pengaturan</button></div>
+          <p class="form-error" id="pin-baru-error" role="alert" hidden></p>
+        </form>
+        <div id="pin-baru-hasil" class="pin-hasil" hidden>
+          <p>Salin baris berikut ke <code>config.js</code> di GitHub (ganti baris <code>pinGuru</code> yang lama), lalu klik <b>Commit changes</b>. PIN baru berlaku 1–2 menit kemudian.</p>
+          <textarea id="pin-baru-baris" rows="3" readonly></textarea>
+          <button type="button" class="btn ghost sm" id="btn-salin-pin">Salin</button>
+        </div>
       </div>
     </div>
   </header>
@@ -764,6 +816,8 @@
     </div>
     <div id="raport-body"></div>
     <div class="rank">
+      <p class="guru-note" id="rank-locked">Peringkat kelas, raport siswa lain, dan unduh raport kelas (Excel) khusus guru. Klik <b>Mode guru</b> di atas lalu masukkan PIN.</p>
+      <div class="rank-guru" id="rank-guru">
       <div class="rank-head">
         <h3>Peringkat kelas</h3>
         <div class="rank-tools">
@@ -777,6 +831,7 @@
       <p class="xlsx-status" id="xlsx-status" role="status" hidden></p>
       <p class="muted small">Diurutkan dari nilai akhir tertinggi, untuk siswa yang bermain di perangkat ini. Klik nama untuk melihat raportnya.</p>
       <div class="table-wrap" id="rank-body"></div>
+      </div>
     </div>
   </section>
 
@@ -786,7 +841,8 @@
       <h2 class="prompt" id="hist-title">Riwayat Jawaban</h2>
       <p class="hist-summary" id="hist-summary"></p>
     </div>
-    <div class="hist-tools">
+    <p class="guru-note" id="hist-locked">Riwayat siswa lain, unduh CSV, dan hapus riwayat khusus guru. Klik <b>Mode guru</b> di atas lalu masukkan PIN.</p>
+    <div class="hist-tools" id="hist-guru">
       <div class="filters">
         <div class="field inline">
           <label for="f-siapa">Tampilkan</label>
@@ -1711,6 +1767,74 @@
     else goTo(k);
   }
 
+  // ---------- Mode guru (PIN) ----------
+  // PIN tidak disimpan di kode; config.js hanya berisi hash SHA-256 berulang dengan salt.
+  function sha256hex(msg) {
+    const K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+    const bytes = new TextEncoder().encode(msg);
+    const len = bytes.length, bitLen = len * 8;
+    const total = ((len + 9 + 63) >> 6) << 6;
+    const m = new Uint8Array(total);
+    m.set(bytes);
+    m[len] = 0x80;
+    const dv = new DataView(m.buffer);
+    dv.setUint32(total - 4, bitLen >>> 0);
+    dv.setUint32(total - 8, Math.floor(bitLen / 4294967296));
+    let h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    const w = new Uint32Array(64);
+    const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+    for (let o = 0; o < total; o += 64) {
+      for (let i = 0; i < 16; i++) w[i] = dv.getUint32(o + i * 4);
+      for (let i = 16; i < 64; i++) {
+        const s0 = rotr(w[i - 15], 7) ^ rotr(w[i - 15], 18) ^ (w[i - 15] >>> 3);
+        const s1 = rotr(w[i - 2], 17) ^ rotr(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
+      }
+      let [a, b, c, d, e, f, g, hh] = h;
+      for (let i = 0; i < 64; i++) {
+        const t1 = (hh + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) >>> 0;
+        const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+        hh = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+      }
+      h = [h[0] + a, h[1] + b, h[2] + c, h[3] + d, h[4] + e, h[5] + f, h[6] + g, h[7] + hh].map((x) => x >>> 0);
+    }
+    return h.map((x) => x.toString(16).padStart(8, "0")).join("");
+  }
+  function hashPin(pin, salt, iter) {
+    let h = sha256hex(salt + ":" + pin);
+    for (let i = 1; i < iter; i++) h = sha256hex(salt + ":" + h);
+    return h;
+  }
+
+  const PIN_GURU = CONFIG.pinGuru && CONFIG.pinGuru.hash ? CONFIG.pinGuru : null;
+  let guru = false;
+  let pinGagal = 0, pinTungguSampai = 0;
+
+  function renderGuru() {
+    $("btn-guru").classList.toggle("on", guru);
+    $("btn-guru").textContent = guru ? "Mode guru aktif" : "Mode guru";
+    $("pin-form").hidden = guru;
+    $("guru-on").hidden = !guru;
+    $("hist-locked").hidden = guru;
+    $("hist-guru").hidden = !guru;
+    $("rank-locked").hidden = guru;
+    $("rank-guru").hidden = !guru;
+  }
+  function setGuru(on) {
+    guru = on;
+    if (!on) {
+      raportOf = null;
+      $("guru-panel").hidden = true;
+      $("f-siapa").value = "saya";
+      $("pin-baru-form").hidden = true;
+      $("pin-baru-hasil").hidden = true;
+    }
+    renderGuru();
+    if (!user) return;
+    if (view === "riwayat") renderHistory();
+    if (view === "raport") renderRaport();
+  }
+
   // ---------- Raport ----------
   // Predikat: di atas 90 = A, di atas 80 = B, di atas 70 = C, selain itu D.
   function predikat(n) {
@@ -1743,6 +1867,7 @@
 
   function renderRaport() {
     const hist = loadHist();
+    if (!guru) raportOf = null;
     const target = raportOf || { nama: user.nama, kelas: user.kelas };
     const rp = reportFor(userKey(target), hist);
     const isMe = userKey(target) === userKey(user);
@@ -1938,6 +2063,7 @@
   // ---------- Riwayat ----------
   function renderHistory() {
     const all = loadHist().slice().reverse();
+    if (!guru) $("f-siapa").value = "saya";
     const siapa = $("f-siapa").value;
     const fk = $("f-kelas");
     const kelasList = [...new Set(all.map((r) => r.kelas))].sort();
@@ -2051,6 +2177,7 @@
   });
 
   $("btn-keluar").addEventListener("click", () => {
+    setGuru(false);
     user = null;
     state = null;
     raportOf = null;
@@ -2066,7 +2193,70 @@
   $("btn-raport-saya").addEventListener("click", () => { raportOf = null; $("f-rank-kelas").dataset.chosen = ""; renderRaport(); });
   $("btn-cetak").addEventListener("click", () => { try { window.print(); } catch {} });
   $("f-rank-kelas").addEventListener("change", (e) => { e.target.dataset.chosen = e.target.value; renderRaport(); });
+  $("btn-guru").addEventListener("click", () => {
+    const panel = $("guru-panel");
+    panel.hidden = !panel.hidden;
+    if (!panel.hidden && !guru) {
+      $("pin-error").hidden = true;
+      $("in-pin").value = "";
+      $("in-pin").focus();
+    }
+  });
+  $("btn-pin-batal").addEventListener("click", () => { $("guru-panel").hidden = true; });
+  $("pin-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const err = $("pin-error");
+    const tunggu = Math.ceil((pinTungguSampai - Date.now()) / 1000);
+    let pesan = "";
+    if (!PIN_GURU) pesan = "PIN guru belum diatur di config.js.";
+    else if (tunggu > 0) pesan = `Terlalu banyak percobaan. Coba lagi dalam ${tunggu} detik.`;
+    else if (!$("in-pin").value) pesan = "PIN belum diisi.";
+    else if (hashPin($("in-pin").value, PIN_GURU.salt, PIN_GURU.iter || 20000) === PIN_GURU.hash) {
+      pinGagal = 0;
+      $("in-pin").value = "";
+      err.hidden = true;
+      setGuru(true);
+      return;
+    } else {
+      pinGagal++;
+      if (pinGagal >= 5) { pinTungguSampai = Date.now() + 30000; pinGagal = 0; pesan = "PIN salah 5 kali. Tunggu 30 detik sebelum mencoba lagi."; }
+      else pesan = "PIN salah. Coba lagi.";
+    }
+    err.textContent = pesan;
+    err.hidden = false;
+    $("in-pin").select();
+  });
+  $("btn-guru-kunci").addEventListener("click", () => setGuru(false));
+  $("btn-ganti-pin").addEventListener("click", () => {
+    $("pin-baru-form").hidden = !$("pin-baru-form").hidden;
+    $("pin-baru-hasil").hidden = true;
+    $("in-pin-baru").value = "";
+    $("in-pin-ulang").value = "";
+    $("pin-baru-error").hidden = true;
+  });
+  $("pin-baru-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const a = $("in-pin-baru").value, b = $("in-pin-ulang").value;
+    const err = $("pin-baru-error");
+    const pesan = !/^\d{4,12}$/.test(a) ? "PIN harus 4–12 angka." : a !== b ? "Kedua PIN tidak sama." : "";
+    err.textContent = pesan;
+    err.hidden = !pesan;
+    if (pesan) return;
+    const salt = Array.from(crypto.getRandomValues(new Uint8Array(12)), (x) => x.toString(16).padStart(2, "0")).join("");
+    const iter = 20000;
+    $("pin-baru-baris").value = `  pinGuru: { salt: "${salt}", iter: ${iter}, hash: "${hashPin(a, salt, iter)}" },`;
+    $("pin-baru-form").hidden = true;
+    $("pin-baru-hasil").hidden = false;
+  });
+  $("btn-salin-pin").addEventListener("click", () => {
+    const ta = $("pin-baru-baris");
+    const done = () => { $("btn-salin-pin").textContent = "Tersalin"; };
+    try {
+      navigator.clipboard.writeText(ta.value).then(done, () => { ta.select(); });
+    } catch { ta.select(); }
+  });
   $("btn-xlsx").addEventListener("click", async () => {
+    if (!guru) return;
     const btn = $("btn-xlsx"), st = $("xlsx-status"), kelas = $("f-rank-kelas").value;
     btn.disabled = true;
     st.hidden = false;
@@ -2085,7 +2275,7 @@
   });
   $("rank-body").addEventListener("click", (e) => {
     const b = e.target.closest("button.link");
-    if (!b) return;
+    if (!b || !guru) return;
     const r = loadHist().find((x) => userKey(x) === b.dataset.uk);
     if (!r) return;
     raportOf = { nama: r.nama, kelas: r.kelas };
@@ -2096,8 +2286,9 @@
   $("btn-main").addEventListener("click", () => { show("game"); render(); });
   $("f-siapa").addEventListener("change", renderHistory);
   $("f-kelas").addEventListener("change", renderHistory);
-  $("btn-csv").addEventListener("click", downloadCSV);
+  $("btn-csv").addEventListener("click", () => { if (guru) downloadCSV(); });
   $("btn-hapus").addEventListener("click", () => {
+    if (!guru) return;
     $("hapus-text").textContent = `Hapus ${histRows.length} ronde yang sedang ditampilkan dari perangkat ini? Data yang sudah terhapus tidak bisa dikembalikan.`;
     $("hapus-confirm").hidden = false;
   });
@@ -2138,6 +2329,7 @@
   });
 
   function start(data) {
+    renderGuru();
     $("in-kelas").value = ls.get(K_KELAS, "");
     const u = ls.get(K_USER, null);
     if (!u || typeof u.nama !== "string" || typeof u.kelas !== "string") return show("login");
