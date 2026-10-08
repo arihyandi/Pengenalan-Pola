@@ -65,6 +65,10 @@ Setiap jawaban otomatis tercatat: waktu, nama, kelas, tingkat, soal, jawaban sis
 - Menu **Detektif Pola → Perbarui semua raport** di spreadsheet utama dipakai untuk membuat ulang semua raport secara manual.
 - **Nama kelas digabung** tanpa membedakan huruf besar/kecil dan spasi berlebih: `7a`, `7A`, dan ` 7A ` masuk ke file **Kelas 7A**. Nama siswa dicatat apa adanya.
 
+### Akses hanya untuk guru
+
+Akun Google sekolah bisa otomatis membagikan file baru ke seluruh domain sekolah (termasuk akun siswa). Karena itu skrip **mengunci akses secara otomatis** saat pertama kali berjalan: spreadsheet data, folder raport, dan setiap file raport kelas diubah menjadi privat (hanya pemilik). Untuk menguncinya segera, buka spreadsheet data, muat ulang halaman, lalu pilih **Detektif Pola → Kunci akses (hanya guru)**. Hasilnya bisa dicek lewat tombol **Bagikan**: bagian *Akses umum* harus bertuliskan **Dibatasi**.
+
 ### Siapa yang bisa melihat
 
 Spreadsheet, folder, dan file raport dibuat di akun Google guru dan **tidak dibagikan ke siapa pun**. Siswa hanya bisa *mengirim* jawaban lewat URL aplikasi web; URL itu tidak pernah menampilkan data. Jangan membagikan tautan spreadsheet atau folder raport kepada siswa. Siapa pun yang mengetahui URL aplikasi web bisa mengirim data palsu, jadi URL ini cukup disimpan di `config.js`.

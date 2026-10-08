@@ -2,11 +2,14 @@
  * Detektif Pola: penerima riwayat jawaban dan pembuat raport per kelas.
  *
  * Cara pakai (ringkas, lihat README.md untuk langkah lengkap):
- * 1. Buat Google Sheets baru, lalu buka Ekstensi -> Apps Script.
+ * 1. Buka spreadsheet "Detektif Pola - Data" (atau Google Sheets baru),
+ *    lalu Ekstensi -> Apps Script.
  * 2. Tempel seluruh isi file ini, simpan.
  * 3. Terapkan -> Deployment baru -> Jenis: Aplikasi web.
  *    Jalankan sebagai: Saya. Yang memiliki akses: Siapa saja.
  * 4. Salin URL Web App ke config.js (googleSheetsUrl) di GitHub.
+ * 5. Di spreadsheet, muat ulang halaman lalu pilih menu
+ *    Detektif Pola -> Kunci akses (hanya guru).
  *
  * Data siswa masuk ke tab "Jawaban" dan "Ringkasan". Setiap kali siswa
  * menyelesaikan satu ronde, raport kelasnya diperbarui di file Google Sheets
@@ -79,6 +82,7 @@ function perbaruiRaportTertanda_() {
     var kelasList = Object.keys(semua).filter(function (k) { return k.indexOf('perlu:') === 0; })
       .map(function (k) { return k.slice(6); });
     if (!kelasList.length) return;
+    amankanAkses_(false);
     var data = kumpulkanNilai_(null);
     kelasList.forEach(function (kelas) {
       props.deleteProperty('perlu:' + kelas);
@@ -99,10 +103,12 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Detektif Pola')
     .addItem('Perbarui semua raport', 'perbaruiSemuaRaport')
+    .addItem('Kunci akses (hanya guru)', 'kunciAkses')
     .addToUi();
 }
 
 function perbaruiSemuaRaport() {
+  amankanAkses_(false);
   var props = PropertiesService.getScriptProperties();
   Object.keys(props.getProperties()).forEach(function (k) {
     if (k.indexOf('perlu:') === 0) props.deleteProperty(k);
@@ -238,7 +244,9 @@ function fileRaport_(kelas) {
     }
   }
   var file = SpreadsheetApp.create('Raport Detektif Pola - Kelas ' + kelas);
-  DriveApp.getFileById(file.getId()).moveTo(folderRaport_());
+  var driveFile = DriveApp.getFileById(file.getId());
+  driveFile.moveTo(folderRaport_());
+  kunci_(driveFile);
   props.setProperty(key, file.getId());
   return file;
 }
@@ -254,7 +262,14 @@ function folderRaport_() {
       // Folder hilang: buat ulang.
     }
   }
-  var folder = DriveApp.createFolder(FOLDER_RAPORT);
+  // Pakai folder "Raport Detektif Pola" yang sudah ada (milik guru) bila ada.
+  var ada = DriveApp.getFoldersByName(FOLDER_RAPORT);
+  var folder = null;
+  while (ada.hasNext()) {
+    var f2 = ada.next();
+    if (!f2.isTrashed()) { folder = f2; break; }
+  }
+  if (!folder) folder = DriveApp.createFolder(FOLDER_RAPORT);
   props.setProperty('folder', folder.getId());
   return folder;
 }
@@ -275,6 +290,36 @@ function catatDaftar_(kelas, jumlah, waktu, url) {
     }
   }
   sh.appendRow(row);
+}
+
+// ---------- Akses: hanya guru (pemilik) ----------
+
+// Akun sekolah bisa otomatis membagikan file baru ke seluruh domain. Fungsi ini
+// mengubah spreadsheet data, folder raport, dan semua file raport menjadi privat.
+function kunciAkses() {
+  amankanAkses_(true);
+}
+
+function amankanAkses_(paksa) {
+  var props = PropertiesService.getScriptProperties();
+  if (!paksa && props.getProperty('akses-dikunci')) return;
+  var dataFile = DriveApp.getFileById(SpreadsheetApp.getActiveSpreadsheet().getId());
+  kunci_(dataFile);
+  var parents = dataFile.getParents();
+  while (parents.hasNext()) kunci_(parents.next());
+  var folder = folderRaport_();
+  kunci_(folder);
+  var files = folder.getFiles();
+  while (files.hasNext()) kunci_(files.next());
+  props.setProperty('akses-dikunci', '1');
+}
+
+function kunci_(item) {
+  try {
+    item.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE);
+  } catch (err) {
+    // Jika kebijakan sekolah menolak, akses tetap bisa diatur manual lewat tombol Bagikan.
+  }
 }
 
 // ---------- Utilitas ----------
