@@ -71,6 +71,7 @@ Karena game ini hanya satu file `index.html`, file tersebut juga bisa diunggah k
 ```
 index.html                     # seluruh game (HTML, CSS, dan JavaScript)
 config.js                      # pengaturan (URL Google Sheets opsional)
+assets/logo-kalam-kudus.png    # logo sekolah (header semua menu dan ikon tab)
 apps-script/Code.gs            # penerima riwayat untuk Google Sheets
 .github/workflows/pages.yml    # publikasi otomatis ke GitHub Pages
 ```

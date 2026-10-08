@@ -9,7 +9,7 @@
 <meta property="og:description" content="Game tebak pola dengan 5 tingkat untuk materi berpikir komputasional.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#17233A">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%2317233A'/%3E%3Ccircle cx='30' cy='50' r='13' fill='%23E5484D'/%3E%3Crect x='55' y='37' width='26' height='26' rx='4' fill='%23FFD84D'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="assets/logo-kalam-kudus.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap">
@@ -146,6 +146,9 @@
     background: var(--marker);
     border-radius: 0.16em;
   }
+  .head-top { display: flex; align-items: center; gap: 16px; }
+  .head-main { display: grid; gap: 10px; flex: 1; min-width: 0; }
+  .school-logo { flex: none; width: clamp(80px, 13vw, 124px); height: auto; display: block; }
   .title-row { display: flex; align-items: center; gap: clamp(12px, 3vw, 22px); }
   .detective { flex: none; width: clamp(76px, 15vw, 112px); height: auto; display: block; }
   .det-badge { fill: var(--card); }
@@ -625,6 +628,9 @@
     .eyebrow { flex-direction: column; align-items: flex-start; gap: 2px; }
     .eyebrow span + span::before { display: none; }
     .detective { width: 66px; }
+    .head-top { position: relative; }
+    .school-logo { position: absolute; top: -6px; right: 0; width: 54px; }
+    .eyebrow { padding-right: 62px; }
     h1 { font-size: 36px; }
     .round summary { grid-template-columns: 1fr auto; }
     .r-date { grid-column: 1 / -1; }
@@ -639,66 +645,71 @@
 
 <div class="wrap">
   <header>
-    <span class="eyebrow"><span>Berpikir Komputasional</span><span>Pengenalan Pola</span></span>
-    <div class="title-row">
-      <svg class="detective" viewBox="0 0 140 140" role="img" aria-label="Gambar detektif mengintip lewat kaca pembesar">
-        <defs>
-          <clipPath id="det-hat-clip"><path d="M45 61 C45 36 95 36 95 61 Z"/></clipPath>
-          <clipPath id="det-badge-clip"><circle cx="70" cy="70" r="64"/></clipPath>
-        </defs>
-        <circle class="det-badge" cx="70" cy="70" r="64"/>
-        <circle class="det-ring" cx="70" cy="70" r="64" fill="none" stroke-width="3" stroke-dasharray="6 7"/>
-        <circle cx="24" cy="48" r="6" fill="#E5484D"/>
-        <rect x="14" y="80" width="11" height="11" rx="2" fill="#2F6BFF" transform="rotate(-12 19.5 85.5)"/>
-        <polygon points="118,62 126,76 110,76" fill="#1FA36B"/>
-        <g clip-path="url(#det-badge-clip)">
-          <g transform="translate(70 146) scale(1.2) translate(-70 -140)">
-          <g>
-            <path d="M28 140 C28 109 46 97 70 97 C94 97 112 109 112 140 Z" fill="#B9773E"/>
-            <path d="M62 97 L70 114 L78 97 Z" fill="#FFFFFF"/>
-            <polygon points="68.2,100 71.8,100 72.5,112 70,115 67.5,112" fill="#E5484D"/>
-            <path d="M57 98 L70 124 L62 100 Z" fill="#8E5626"/>
-            <path d="M83 98 L70 124 L78 100 Z" fill="#8E5626"/>
-            <circle cx="58" cy="122" r="2.6" fill="#6B3F18"/>
-            <circle cx="58" cy="132" r="2.6" fill="#6B3F18"/>
-            <circle cx="82" cy="122" r="2.6" fill="#6B3F18"/>
-            <circle cx="82" cy="132" r="2.6" fill="#6B3F18"/>
+    <div class="head-top">
+      <div class="head-main">
+      <span class="eyebrow"><span>Berpikir Komputasional</span><span>Pengenalan Pola</span></span>
+      <div class="title-row">
+        <svg class="detective" viewBox="0 0 140 140" role="img" aria-label="Gambar detektif mengintip lewat kaca pembesar">
+          <defs>
+            <clipPath id="det-hat-clip"><path d="M45 61 C45 36 95 36 95 61 Z"/></clipPath>
+            <clipPath id="det-badge-clip"><circle cx="70" cy="70" r="64"/></clipPath>
+          </defs>
+          <circle class="det-badge" cx="70" cy="70" r="64"/>
+          <circle class="det-ring" cx="70" cy="70" r="64" fill="none" stroke-width="3" stroke-dasharray="6 7"/>
+          <circle cx="24" cy="48" r="6" fill="#E5484D"/>
+          <rect x="14" y="80" width="11" height="11" rx="2" fill="#2F6BFF" transform="rotate(-12 19.5 85.5)"/>
+          <polygon points="118,62 126,76 110,76" fill="#1FA36B"/>
+          <g clip-path="url(#det-badge-clip)">
+            <g transform="translate(70 146) scale(1.2) translate(-70 -140)">
+            <g>
+              <path d="M28 140 C28 109 46 97 70 97 C94 97 112 109 112 140 Z" fill="#B9773E"/>
+              <path d="M62 97 L70 114 L78 97 Z" fill="#FFFFFF"/>
+              <polygon points="68.2,100 71.8,100 72.5,112 70,115 67.5,112" fill="#E5484D"/>
+              <path d="M57 98 L70 124 L62 100 Z" fill="#8E5626"/>
+              <path d="M83 98 L70 124 L78 100 Z" fill="#8E5626"/>
+              <circle cx="58" cy="122" r="2.6" fill="#6B3F18"/>
+              <circle cx="58" cy="132" r="2.6" fill="#6B3F18"/>
+              <circle cx="82" cy="122" r="2.6" fill="#6B3F18"/>
+              <circle cx="82" cy="132" r="2.6" fill="#6B3F18"/>
+            </g>
+            <rect x="63" y="88" width="14" height="11" rx="3" fill="#EDB98F"/>
+            <circle cx="48" cy="73" r="5.5" fill="#EDB98F"/>
+            <circle cx="92" cy="73" r="5.5" fill="#EDB98F"/>
+            <circle cx="70" cy="71" r="22" fill="#F5CBA7"/>
+            <circle cx="57" cy="80" r="4" fill="#F28B82" opacity="0.55"/>
+            <circle cx="83" cy="80" r="4" fill="#F28B82" opacity="0.55"/>
+            <path d="M56 64 Q61 61 66 64" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M75 61 Q80 56.5 86 60" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="61" cy="71" r="3" fill="#17233A"/>
+            <circle cx="62" cy="70" r="1" fill="#FFFFFF"/>
+            <path d="M63 83 Q69 87.5 76 82" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
+            <path d="M45 61 C45 36 95 36 95 61 Z" fill="#7A5230"/>
+            <g clip-path="url(#det-hat-clip)" stroke="#5E3D20" stroke-width="2" opacity="0.75">
+              <line x1="57" y1="36" x2="57" y2="62"/>
+              <line x1="70" y1="36" x2="70" y2="62"/>
+              <line x1="83" y1="36" x2="83" y2="62"/>
+              <line x1="44" y1="50" x2="96" y2="50"/>
+            </g>
+            <path d="M42 60 Q70 70 98 60 Q97 67 70 69.5 Q43 67 42 60 Z" fill="#5E3D20"/>
+            <ellipse cx="65" cy="38.5" rx="5" ry="2.6" fill="#5E3D20" transform="rotate(-20 65 38.5)"/>
+            <ellipse cx="75" cy="38.5" rx="5" ry="2.6" fill="#5E3D20" transform="rotate(20 75 38.5)"/>
+            <circle cx="70" cy="39.5" r="2.6" fill="#7A5230"/>
+            <line x1="89" y1="79" x2="104" y2="97" stroke="#5E3D20" stroke-width="6.5" stroke-linecap="round"/>
+            <circle cx="105" cy="99" r="6.5" fill="#F5CBA7"/>
+            <circle cx="81" cy="70" r="12" fill="#DDEBFF" fill-opacity="0.55" stroke="#F2B01E" stroke-width="4"/>
+            <circle cx="81" cy="70" r="5.5" fill="#17233A"/>
+            <circle cx="83" cy="68" r="1.8" fill="#FFFFFF"/>
+            <path d="M73.5 65 A9 9 0 0 1 78 61" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+            </g>
           </g>
-          <rect x="63" y="88" width="14" height="11" rx="3" fill="#EDB98F"/>
-          <circle cx="48" cy="73" r="5.5" fill="#EDB98F"/>
-          <circle cx="92" cy="73" r="5.5" fill="#EDB98F"/>
-          <circle cx="70" cy="71" r="22" fill="#F5CBA7"/>
-          <circle cx="57" cy="80" r="4" fill="#F28B82" opacity="0.55"/>
-          <circle cx="83" cy="80" r="4" fill="#F28B82" opacity="0.55"/>
-          <path d="M56 64 Q61 61 66 64" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M75 61 Q80 56.5 86 60" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
-          <circle cx="61" cy="71" r="3" fill="#17233A"/>
-          <circle cx="62" cy="70" r="1" fill="#FFFFFF"/>
-          <path d="M63 83 Q69 87.5 76 82" fill="none" stroke="#3A2414" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M45 61 C45 36 95 36 95 61 Z" fill="#7A5230"/>
-          <g clip-path="url(#det-hat-clip)" stroke="#5E3D20" stroke-width="2" opacity="0.75">
-            <line x1="57" y1="36" x2="57" y2="62"/>
-            <line x1="70" y1="36" x2="70" y2="62"/>
-            <line x1="83" y1="36" x2="83" y2="62"/>
-            <line x1="44" y1="50" x2="96" y2="50"/>
-          </g>
-          <path d="M42 60 Q70 70 98 60 Q97 67 70 69.5 Q43 67 42 60 Z" fill="#5E3D20"/>
-          <ellipse cx="65" cy="38.5" rx="5" ry="2.6" fill="#5E3D20" transform="rotate(-20 65 38.5)"/>
-          <ellipse cx="75" cy="38.5" rx="5" ry="2.6" fill="#5E3D20" transform="rotate(20 75 38.5)"/>
-          <circle cx="70" cy="39.5" r="2.6" fill="#7A5230"/>
-          <line x1="89" y1="79" x2="104" y2="97" stroke="#5E3D20" stroke-width="6.5" stroke-linecap="round"/>
-          <circle cx="105" cy="99" r="6.5" fill="#F5CBA7"/>
-          <circle cx="81" cy="70" r="12" fill="#DDEBFF" fill-opacity="0.55" stroke="#F2B01E" stroke-width="4"/>
-          <circle cx="81" cy="70" r="5.5" fill="#17233A"/>
-          <circle cx="83" cy="68" r="1.8" fill="#FFFFFF"/>
-          <path d="M73.5 65 A9 9 0 0 1 78 61" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
-          </g>
-        </g>
-        <circle cx="112" cy="32" r="12" class="det-bubble"/>
-        <path d="M107.6 29.2 Q107.6 24.6 112 24.6 Q116.4 24.6 116.4 28.6 Q116.4 31 113.4 32.4 Q112 33 112 35" fill="none" stroke="#17233A" stroke-width="2.6" stroke-linecap="round"/>
-        <circle cx="112" cy="39.4" r="1.7" fill="#17233A"/>
-      </svg>
-      <h1>Detektif <span class="hl">Pola</span></h1>
+          <circle cx="112" cy="32" r="12" class="det-bubble"/>
+          <path d="M107.6 29.2 Q107.6 24.6 112 24.6 Q116.4 24.6 116.4 28.6 Q116.4 31 113.4 32.4 Q112 33 112 35" fill="none" stroke="#17233A" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="112" cy="39.4" r="1.7" fill="#17233A"/>
+        </svg>
+        <h1>Detektif <span class="hl">Pola</span></h1>
+      </div>
+      </div>
+      <img class="school-logo" src="assets/logo-kalam-kudus.png" width="320" height="284" alt="Logo Kalam Kudus">
     </div>
     <p class="lede">Amati urutannya, temukan aturan yang berulang, lalu pilih yang mengisi kotak bertanda&nbsp;<b>?</b>. Ada 5 tingkat, masing-masing berisi 15–20 soal gambar, angka, dan huruf.</p>
     <div class="userbar" id="userbar" hidden>
