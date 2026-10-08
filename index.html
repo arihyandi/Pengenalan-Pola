@@ -1352,7 +1352,8 @@
   const bestOf = (lv) => (ls.get(K_BEST, {})[userKey(user)] || {})[lv];
   const unlocked = (lv) => lv === 0 || (bestOf(lv - 1) ?? -1) >= need(lv - 1);
   const MAX_ROUNDS = 300;
-  const userKey = (u) => (u.nama + "|" + u.kelas).toLowerCase();
+  // Kelas digabung tanpa membedakan huruf besar/kecil; nama siswa dicatat apa adanya.
+  const userKey = (u) => String(u.nama).replace(/\s+/g, " ").trim() + "|" + String(u.kelas).replace(/\s+/g, " ").trim().toUpperCase();
 
   const loadHist = () => {
     const h = ls.get(K_HIST, []);

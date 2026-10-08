@@ -43,12 +43,33 @@ Tombol **Raport** menampilkan hasil keseluruhan siswa yang sedang masuk:
 Setiap jawaban otomatis tercatat: waktu, nama, kelas, tingkat, soal, jawaban siswa, kunci, dan benar/salah.
 
 - **Di perangkat (selalu aktif).** Tombol **Riwayat** menampilkan ronde yang pernah dimainkan beserta rincian tiap soal. Pilih **Semua siswa di perangkat ini** dan filter kelas untuk melihat semua siswa yang bermain di komputer/HP tersebut. **Unduh CSV** menyimpan riwayat sebagai file yang bisa dibuka di Excel atau Google Sheets. Riwayat ini disimpan di browser (maksimal 300 ronde terakhir) dan hilang jika data browser dihapus.
-- **Google Sheets guru (opsional).** Agar jawaban siswa dari semua perangkat terkumpul di satu tempat:
-  1. Buat Google Sheets baru, lalu buka **Ekstensi → Apps Script**.
-  2. Hapus isi editor, tempel seluruh isi `apps-script/Code.gs`, lalu simpan.
-  3. Klik **Terapkan → Deployment baru**, pilih jenis **Aplikasi web**. Isi *Jalankan sebagai*: **Saya**, dan *Yang memiliki akses*: **Siapa saja**. Klik **Terapkan** dan izinkan aksesnya.
-  4. Salin **URL aplikasi web** (berakhiran `/exec`) ke `config.js` pada bagian `googleSheetsUrl`, lalu commit ke `master`.
-  5. Jawaban akan masuk ke tab **Jawaban** (per soal) dan **Ringkasan** (per ronde: nilai dan bintang).
+- **Google Sheets guru (opsional, disarankan).** Jawaban siswa dari semua perangkat terkumpul di Google Drive guru, dan **raport per kelas dibuat otomatis**.
+
+### Menyiapkan raport di Google Sheets
+
+1. Buka [sheets.new](https://sheets.new) untuk membuat Google Sheets baru, misalnya bernama *Detektif Pola - Data*.
+2. Buka **Ekstensi → Apps Script**. Hapus isi editor, tempel seluruh isi `apps-script/Code.gs`, lalu klik **Simpan**.
+3. Klik **Terapkan → Deployment baru**. Pilih jenis **Aplikasi web**, isi *Jalankan sebagai*: **Saya**, dan *Yang memiliki akses*: **Siapa saja**. Klik **Terapkan**, lalu izinkan akses ke Google Sheets dan Google Drive.
+4. Salin **URL aplikasi web** yang berakhiran `/exec`.
+5. Di GitHub, buka file `config.js`, klik ikon pensil (**Edit**), lalu tempel URL tadi di antara tanda kutip:
+   ```js
+   googleSheetsUrl: "https://script.google.com/macros/s/XXXX/exec",
+   ```
+   Klik **Commit changes** ke branch `master`. Situs akan diperbarui otomatis dalam 1–2 menit.
+
+### Hasil di Google Drive guru
+
+- Tab **Jawaban** (per soal) dan **Ringkasan** (per ronde) di spreadsheet utama.
+- Folder **Raport Detektif Pola** berisi **satu file per kelas**, misalnya *Raport Detektif Pola - Kelas 7A*. Isinya peringkat, nama, nilai Tingkat 1–5, jumlah tingkat lulus, nilai akhir, predikat (A/B/C/D), dan keterangan. File diperbarui otomatis setiap ada siswa yang menyelesaikan ronde.
+- Tab **Daftar Raport** di spreadsheet utama berisi tautan ke setiap file kelas.
+- Menu **Detektif Pola → Perbarui semua raport** di spreadsheet utama dipakai untuk membuat ulang semua raport secara manual.
+- **Nama kelas digabung** tanpa membedakan huruf besar/kecil dan spasi berlebih: `7a`, `7A`, dan ` 7A ` masuk ke file **Kelas 7A**. Nama siswa dicatat apa adanya.
+
+### Siapa yang bisa melihat
+
+Spreadsheet, folder, dan file raport dibuat di akun Google guru dan **tidak dibagikan ke siapa pun**. Siswa hanya bisa *mengirim* jawaban lewat URL aplikasi web; URL itu tidak pernah menampilkan data. Jangan membagikan tautan spreadsheet atau folder raport kepada siswa. Siapa pun yang mengetahui URL aplikasi web bisa mengirim data palsu, jadi URL ini cukup disimpan di `config.js`.
+
+Jika `Code.gs` diperbarui, buka **Terapkan → Kelola deployment → Edit (ikon pensil) → Versi: Versi baru → Terapkan** agar URL tetap sama.
 
 Catatan: login ini hanya untuk mencatat identitas, bukan pengamanan. Siswa bisa menulis nama apa saja, dan siapa pun yang memegang perangkat bisa membuka atau menghapus riwayat di perangkat itu.
 
