@@ -209,7 +209,9 @@
   .levels button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
   .levels button[aria-pressed="true"] .n,
   .levels button[aria-pressed="true"] .c { color: var(--paper); opacity: 0.75; }
-  .levels button.locked { background: var(--tile); border-style: dashed; cursor: not-allowed; opacity: 0.6; }
+  .levels button.locked { background: var(--tile); border-style: dashed; cursor: not-allowed; color: var(--muted); }
+  .levels button.locked .t { color: var(--muted); }
+  .levels button.locked .lvl-bar i.on { opacity: 0.45; }
   .levels button.locked:hover { border-color: var(--line); }
   .levels .lock { display: none; width: 11px; height: 11px; margin-left: 5px; vertical-align: -1px; }
   .levels button.locked .lock { display: inline-block; }
@@ -574,6 +576,26 @@
   .ans-pick > span { display: inline-flex; align-items: center; gap: 6px; }
   .empty { margin: 0; padding: 18px; text-align: center; color: var(--muted); font-size: 14px; border: 1.5px dashed var(--line); border-radius: 12px; }
 
+  /* Latar animasi: pola, kode, simbol, dan angka yang melayang */
+  .ambient { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .wrap { position: relative; z-index: 1; }
+  .ambient span {
+    position: absolute;
+    left: var(--x);
+    bottom: -12vh;
+    font: 700 var(--s)/1 var(--mono);
+    color: var(--c);
+    opacity: var(--o);
+    white-space: nowrap;
+    will-change: transform;
+    animation: melayang var(--d) linear var(--t) infinite;
+  }
+  .ambient span.still { bottom: auto; top: var(--y); animation: none; transform: rotate(var(--r0)); }
+  @keyframes melayang {
+    from { transform: translate3d(0, 0, 0) rotate(var(--r0)); }
+    to { transform: translate3d(var(--dx), -128vh, 0) rotate(var(--r1)); }
+  }
+
   /* Mode guru */
   .guru-panel { display: grid; gap: 10px; background: var(--card); border: 1.5px dashed var(--accent); border-radius: 12px; padding: 14px; }
   .pin-form { display: grid; gap: 10px; max-width: 360px; }
@@ -654,6 +676,7 @@
   .muted.small { font-size: 13px; }
 
   @media print {
+    .ambient { display: none !important; }
     body { background: #fff; color: #000; }
     .wrap > *:not(#view-raport):not(header), header .lede, header .userbar, header .eyebrow,
     .raport-actions, .rank .muted.small { display: none !important; }
@@ -727,6 +750,7 @@
 </style>
 </head>
 <body>
+<div class="ambient" id="ambient" aria-hidden="true"></div>
 
 <div class="wrap">
   <header>
@@ -1544,6 +1568,7 @@
   function show(next) {
     view = next;
     document.body.dataset.view = view;
+    buatLatar(view);
     if (view === "login") { isiKelasChips(); mulaiDemo(); } else hentikanDemo();
     $("view-login").hidden = view !== "login";
     $("view-game").hidden = view !== "game";
@@ -1851,6 +1876,42 @@
     const k = nextOpen(state.i);
     if (k < 0) finish();
     else goTo(k);
+  }
+
+  // ---------- Latar animasi tiap halaman ----------
+  const AMB = {
+    pola: ["A B A B ?", "2 4 6 8 ?", "○ □ ○ □", "1 1 2 3 5 8", "▲ ▲ ● ▲ ▲ ●", "x, 2x, 4x, 8x", "AB AB AB", "Z Y X W ?", "1 4 9 16 ?", "★ ☆ ★ ☆"],
+    kode: ["if (pola) { }", "for i in range(5):", "</>", "{ }", "x = x + 2", "while (benar)", "print(\"?\")", "01101", "def pola(n):", "return n * 2", "i++", "==", "[1, 2, 3]", "let n = 0;", "true && false"],
+    simbol: ["+", "−", "×", "÷", "=", "?", "△", "○", "□", "◇", "π", "√", "∞", "%", "#", "≠", "≥"],
+    angka: ["7", "13", "21", "42", "1024", "3,14", "0", "1", "64", "100", "256", "99"],
+  };
+  const AMB_VIEW = {
+    login: ["pola", "kode", "simbol", "angka"],
+    game: ["pola", "pola", "simbol", "angka"],
+    riwayat: ["kode", "kode", "angka"],
+    raport: ["angka", "simbol", "kode"],
+  };
+  const AMB_WARNA = ["var(--accent)", "var(--accent)", "var(--muted)", "var(--good)", "var(--bad)", "#E0A400"];
+  let ambView = "";
+  function buatLatar(v) {
+    if (v === ambView) return;
+    ambView = v;
+    const box = $("ambient");
+    const sets = AMB_VIEW[v] || AMB_VIEW.login;
+    const diam = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const n = window.innerWidth < 600 ? 14 : 26;
+    const r = (a, b) => a + Math.random() * (b - a);
+    let html = "";
+    for (let i = 0; i < n; i++) {
+      const kind = sets[i % sets.length];
+      const txt = pick(AMB[kind]);
+      const besar = kind === "simbol" || kind === "angka" ? r(18, 34) : r(12, 18);
+      const d = r(22, 40);
+      html += `<span class="${diam ? "still" : ""}" style="--x:${r(-4, 96).toFixed(1)}vw;--y:${r(2, 94).toFixed(1)}vh;--s:${besar.toFixed(0)}px;--c:${pick(AMB_WARNA)};` +
+        `--o:${r(0.1, 0.2).toFixed(2)};--d:${d.toFixed(1)}s;--t:${(-r(0, d)).toFixed(1)}s;--dx:${r(-8, 8).toFixed(1)}vw;` +
+        `--r0:${r(-15, 15).toFixed(0)}deg;--r1:${r(-25, 25).toFixed(0)}deg">${esc(txt)}</span>`;
+    }
+    box.innerHTML = html;
   }
 
   // ---------- Halaman masuk: ilustrasi, contoh pola bergerak, pilihan kelas ----------
