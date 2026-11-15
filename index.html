@@ -820,7 +820,7 @@
       </div>
       <img class="school-logo" src="assets/logo-kalam-kudus.png" width="320" height="284" alt="Logo Kalam Kudus">
     </div>
-    <p class="lede">Amati urutannya, temukan aturan yang berulang, lalu pilih yang mengisi kotak bertanda&nbsp;<b>?</b>. Ada 5 tingkat, masing-masing berisi 15–20 soal gambar, angka, dan huruf.</p>
+    <p class="lede">Amati urutannya, temukan aturan yang berulang, lalu pilih yang mengisi kotak bertanda&nbsp;<b>?</b>. Untuk siswa SD kelas 4–6: ada 5 tingkat, masing-masing berisi 15–20 soal gambar, angka, dan huruf.</p>
     <div class="userbar" id="userbar" hidden>
       <span class="who" id="who"></span>
       <div class="userbar-actions">
@@ -884,6 +884,7 @@
       <ul class="hero-chips">
         <li><b>5</b> tingkat</li>
         <li><b>15–20</b> soal per tingkat</li>
+        <li>SD kelas <b>4–6</b></li>
         <li>Raport <b>A–D</b></li>
       </ul>
     </div>
@@ -900,7 +901,7 @@
         </div>
         <div class="field">
           <label for="in-kelas">Kelas</label>
-          <div class="input-wrap"><svg class="in-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5-9 5-9-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 11.5V16c0 1.5 2.5 3 5 3s5-1.5 5-3v-4.5" fill="none" stroke="currentColor" stroke-width="2"/></svg><input id="in-kelas" name="kelas" type="text" autocomplete="off" maxlength="12" placeholder="contoh: 7A"></div>
+          <div class="input-wrap"><svg class="in-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5-9 5-9-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 11.5V16c0 1.5 2.5 3 5 3s5-1.5 5-3v-4.5" fill="none" stroke="currentColor" stroke-width="2"/></svg><input id="in-kelas" name="kelas" type="text" autocomplete="off" maxlength="12" placeholder="contoh: 5A"></div>
           <div class="kelas-chips" id="kelas-chips" hidden></div>
         </div>
         <p class="form-error" id="login-error" role="alert" hidden></p>
@@ -1269,8 +1270,28 @@
       `Selisihnya terus bertambah: +1, +2, +3, +4, lalu <b>+${len - 1}</b>. ${seq[len - 2].v} + ${len - 1} = <b>${ans}</b>.`, numPool(ans, len - 2));
   };
 
+  // Kelipatan (tabel perkalian), materi kelas 4.
+  const genKelipatan = (bases) => () => {
+    const n = pick(bases), k = rnd(1, 3), len = 5;
+    const seq = Array.from({ length: len }, (_, i) => N(n * (k + i)));
+    const ans = seq[len - 1].v;
+    return make("Kelipatan", seq, len - 1,
+      `Ini <b>kelipatan ${n}</b>: ${seq.slice(0, -1).map((x, i) => `${n}×${k + i}`).join(", ")}. Berikutnya ${n}×${k + len - 1} = <b>${ans}</b>.`,
+      numPool(ans, n));
+  };
+
+  // Nilai tempat: dikali 10 terus (satuan, puluhan, ratusan, ribuan).
+  const genKali10 = () => {
+    const a = rnd(1, 9), len = 4;
+    const seq = Array.from({ length: len }, (_, i) => N(a * 10 ** i));
+    const ans = seq[len - 1].v, prev = seq[len - 2].v;
+    return make("Pola Nilai Tempat", seq, len - 1,
+      `Setiap angka <b>dikali 10</b>, jadi angka nol di belakangnya bertambah satu. ${prev} × 10 = <b>${ans}</b>.`,
+      shuffle([prev * 2, prev * 5, prev + 10, ans + a, ans - a].filter((v) => v !== ans)).map(N));
+  };
+
   const genGeometri = () => {
-    const r = pick([2, 3]), a = rnd(1, r === 2 ? 5 : 3), len = 5;
+    const r = 2, a = rnd(1, 3), len = 5;
     const seq = Array.from({ length: len }, (_, i) => N(a * r ** i));
     const ans = seq[len - 1].v, prev = seq[len - 2].v;
     const pool = shuffle([prev + (prev - seq[len - 3].v), ans + r, ans - r, prev * (r + 1)].filter((v) => v !== ans)).map(N)
@@ -1280,7 +1301,7 @@
   };
 
   const genFibo = (middle) => () => {
-    const a = rnd(1, 3), b = rnd(a, a + 3), len = 7;
+    const a = 1, b = rnd(1, 2), len = 7;
     const seq = [N(a), N(b)];
     for (let i = 2; i < len; i++) seq.push(N(seq[i - 1].v + seq[i - 2].v));
     const hide = middle ? rnd(3, len - 2) : len - 1;
@@ -1291,7 +1312,7 @@
   };
 
   const genKuadrat = () => {
-    const s = rnd(1, 4), len = 5;
+    const s = rnd(1, 2), len = 5;
     const seq = Array.from({ length: len }, (_, i) => N((s + i) ** 2));
     const n = s + len - 1, ans = n * n;
     return make("Bilangan Kuadrat", seq, len - 1,
@@ -1300,7 +1321,7 @@
   };
 
   const genKubik = () => {
-    const s = rnd(1, 3), len = 5;
+    const s = 1, len = 5;
     const seq = Array.from({ length: len }, (_, i) => N((s + i) ** 3));
     const n = s + len - 1, ans = n ** 3;
     return make("Bilangan Kubik", seq, len - 1,
@@ -1309,7 +1330,7 @@
   };
 
   const genSegitiga = () => {
-    const s = rnd(1, 3), len = 6;
+    const s = 1, len = 6;
     const tri = (k) => (k * (k + 1)) / 2;
     const seq = Array.from({ length: len }, (_, i) => N(tri(s + i)));
     const ans = seq[len - 1].v, k = s + len - 1;
@@ -1319,7 +1340,7 @@
   };
 
   const genPrima = () => {
-    const i0 = rnd(0, 7), len = 6;
+    const i0 = rnd(0, 3), len = 6;
     const seq = PRIMES.slice(i0, i0 + len).map(N);
     const ans = seq[len - 1].v;
     const pool = shuffle([ans + 1, ans - 1, ans + 2, ans - 2, ans + 4, ans + 6].filter((v) => v !== ans && !PRIMES.slice(i0, i0 + len).includes(v))).map(N);
@@ -1328,7 +1349,7 @@
   };
 
   const genSelang = () => {
-    const pair = pick([["+", 3, "−", 1], ["+", 5, "−", 2], ["×", 2, "+", 1], ["+", 4, "−", 3]]);
+    const pair = pick([["+", 2, "−", 1], ["+", 3, "−", 1], ["+", 5, "−", 2], ["+", 4, "−", 2]]);
     const op = (v, o, n) => (o === "+" ? v + n : o === "−" ? v - n : v * n);
     const len = 7;
     const seq = [N(pair[0] === "×" ? rnd(1, 3) : rnd(2, 10))];
@@ -1342,30 +1363,8 @@
       numPool(ans, pair[1]));
   };
 
-  const genSelisihKali = () => {
-    const a = rnd(1, 5), d0 = rnd(1, 2), len = 6;
-    const seq = [N(a)];
-    for (let i = 1; i < len; i++) seq.push(N(seq[i - 1].v + d0 * 2 ** (i - 1)));
-    const ans = seq[len - 1].v, dLast = d0 * 2 ** (len - 2);
-    const diffs = Array.from({ length: len - 1 }, (_, i) => "+" + d0 * 2 ** i);
-    return make("Selisih Berlipat", seq, len - 1,
-      `Selisihnya selalu <b>dua kali lipat</b>: ${list(diffs)}. ${seq[len - 2].v} + ${dLast} = <b>${ans}</b>.`,
-      [N(seq[len - 2].v + dLast / 2)].concat(numPool(ans, dLast / 2)));
-  };
-
-  const genKaliTambah = () => {
-    const [m, c, cs] = pick([[2, 1, "+"], [2, -1, "−"], [3, -1, "−"]]);
-    const a = m === 3 ? rnd(1, 2) : rnd(2, 3), len = m === 3 ? 5 : 6;
-    const seq = [N(a)];
-    for (let i = 1; i < len; i++) seq.push(N(seq[i - 1].v * m + c));
-    const ans = seq[len - 1].v, prev = seq[len - 2].v;
-    return make("Dua Operasi", seq, len - 1,
-      `Setiap angka <b>dikali ${m} lalu ${cs} ${Math.abs(c)}</b>. ${prev} × ${m} ${cs} ${Math.abs(c)} = <b>${ans}</b>.`,
-      [N(prev * m), N(prev * m + 2 * c), N(prev + (prev - seq[len - 3].v))].concat(numPool(ans, 2)));
-  };
-
   const genDuaDeret = () => {
-    const a0 = rnd(1, 6), k = rnd(2, 4), b0 = rnd(25, 35), m = rnd(1, 3), len = 8;
+    const a0 = rnd(1, 5), k = rnd(2, 3), b0 = rnd(18, 25), m = 1, len = 8;
     const seq = Array.from({ length: len }, (_, i) => N(i % 2 === 0 ? a0 + k * (i / 2) : b0 - m * ((i - 1) / 2)));
     const hide = pick([6, 7]);
     const ans = seq[hide].v;
@@ -1398,7 +1397,7 @@
   };
 
   const genHurufAngka = () => {
-    const step = pick([1, 2]), len = 5;
+    const step = 1, len = 5;
     const c0 = rnd(65, 90 - step * len), n0 = rnd(1, 5);
     const seq = Array.from({ length: len }, (_, i) => T(String.fromCharCode(c0 + step * i) + (n0 + i)));
     const c = c0 + step * (len - 1), n = n0 + len - 1;
@@ -1429,6 +1428,8 @@
   };
 
   // ---------- Levels ----------
+  // Disusun untuk siswa SD kelas 4-6: dari pola gambar dan tambah-kurang sederhana,
+  // ke kelipatan dan nilai tempat, sampai pola bilangan khusus yang masih kecil.
   const LEVELS = [
     {
       name: "Sangat Mudah", count: 15,
@@ -1438,22 +1439,23 @@
     {
       name: "Mudah", count: 16,
       gens: [genWarna(["AAB", "ABB", "ABC"]), genBentuk(["ABC", "AAB", "ABB"]), genGambar(["ABC", "ABB", "AABB"]),
-        genUkuran(["BBK", "BKK"]), genTambah(1, 10, 2, 5), genKurang(1, 3, 6), genHuruf(1, 2), genTitik([1, 2]), genRotasi([90])],
+        genUkuran(["BBK", "BKK"]), genTambah(1, 10, 2, 5), genKurang(1, 3, 6), genHuruf(2, 2), genTitik([2]),
+        genKelipatan([2, 5, 10])],
     },
     {
       name: "Sedang", count: 17,
-      gens: [genKombinasi(false), genRotasi([90, -90, 45]), genKurang(3, 7, 20), genBertumbuh, genHuruf(2, 3),
-        genHurufMundur(1, 2), genTengah(2, 5), genGambar(["ABCD", "AABC"])],
+      gens: [genKombinasi(false), genRotasi([90, -90]), genKelipatan([3, 4, 6]), genKurang(2, 5, 15), genBertumbuh,
+        genHurufMundur(1, 1), genTengah(2, 5), genGambar(["ABCD", "AABC"])],
     },
     {
       name: "Sulit", count: 18,
-      gens: [genGeometri, genFibo(false), genKuadrat, genSelang, genTengah(6, 12), genKombinasi(true),
-        genHurufAngka, genHurufSelang, genRotasi([45, 135, -135])],
+      gens: [genGeometri, genKali10, genSelang, genKuadrat, genTengah(6, 10), genKombinasi(true),
+        genHurufAngka, genHurufSelang, genRotasi([45, -45])],
     },
     {
       name: "Sangat Sulit", count: 20,
-      gens: [genKubik, genSegitiga, genPrima, genSelisihKali, genDuaDeret, genHurufTumbuh, genRotasiWarna,
-        genKaliTambah, genKombinasi(true), genFibo(true)],
+      gens: [genFibo(false), genSegitiga, genPrima, genDuaDeret, genHurufTumbuh, genRotasiWarna,
+        genKubik, genKombinasi(true), genFibo(true), genKelipatan([7, 8, 9])],
     },
   ];
 
@@ -2365,7 +2367,7 @@
     const kelas = $("in-kelas").value.replace(/\s+/g, " ").trim().toUpperCase();
     let err = "", field = null;
     if (nama.length < 2) { err = nama ? "Nama terlalu pendek. Tulis minimal 2 huruf." : "Nama belum diisi."; field = "in-nama"; }
-    else if (!kelas) { err = "Kelas belum diisi. Contoh: 7A."; field = "in-kelas"; }
+    else if (!kelas) { err = "Kelas belum diisi. Contoh: 5A."; field = "in-kelas"; }
     $("login-error").textContent = err;
     $("login-error").hidden = !err;
     ["in-nama", "in-kelas"].forEach((id) => $(id).setAttribute("aria-invalid", String(id === field)));
