@@ -1029,7 +1029,7 @@
       <ul>
         <li>Minta siswa menyebutkan aturannya dengan kata-kata sendiri sebelum menekan jawaban.</li>
         <li>Baca penjelasan setelah setiap soal, lalu diskusikan.</li>
-        <li>Tingkat berikutnya terkunci sampai siswa benar minimal 85% dari seluruh soal di tingkat sebelumnya (Tingkat 1: 13/15, Tingkat 2: 14/16, Tingkat 3: 15/17, Tingkat 4: 16/18).</li>
+        <li>Semua tingkat terbuka sejak awal. Tingkat dinyatakan lulus jika siswa benar minimal 85% soal (Tingkat 1: 13/15, Tingkat 2: 14/16, Tingkat 3: 15/17, Tingkat 4: 16/18, Tingkat 5: 17/20).</li>
         <li>Buka <b>Riwayat → Semua siswa</b> untuk melihat jawaban seluruh siswa yang bermain di perangkat ini, lalu unduh sebagai CSV.</li>
         <li>Soal yang sulit bisa dilewati dulu. Nomor kuning di <b>Daftar soal</b> menandai soal yang dilewati. Pekerjaan tersimpan otomatis, jadi siswa bisa menutup halaman lalu melanjutkan lagi.</li>
         <li>Buka <b>Raport</b> untuk melihat nilai akhir, predikat (A di atas 90, B di atas 80, C di atas 70, D 70 ke bawah), dan peringkat kelas.</li>
@@ -1523,11 +1523,11 @@
   const K_KELAS = "detektif-pola-kelas-terakhir";
   const K_HIST = "detektif-pola-riwayat";
   const K_BEST = "detektif-pola-best-v3";
-  // Syarat naik tingkat: benar minimal 85% dari seluruh soal di tingkat sebelumnya.
+  // Lulus satu tingkat: benar minimal 85% dari seluruh soal. Semua tingkat selalu terbuka.
   const PASS = 0.85;
   const need = (lv) => Math.ceil(LEVELS[lv].count * PASS - 1e-9);
   const bestOf = (lv) => (ls.get(K_BEST, {})[userKey(user)] || {})[lv];
-  const unlocked = (lv) => lv === 0 || (bestOf(lv - 1) ?? -1) >= need(lv - 1);
+  const unlocked = () => true;
   const MAX_ROUNDS = 300;
   // Kelas digabung tanpa membedakan huruf besar/kecil; nama siswa dicatat apa adanya.
   const userKey = (u) => String(u.nama).replace(/\s+/g, " ").trim() + "|" + String(u.kelas).replace(/\s+/g, " ").trim().toUpperCase();
@@ -1669,10 +1669,7 @@
       b.querySelector(".c").textContent = open ? `${LEVELS[lv].count} soal` : "Terkunci";
       b.title = open ? "" : `Terbuka setelah benar minimal ${need(lv - 1)} dari ${LEVELS[lv - 1].count} soal (85%) di Tingkat ${lv}.`;
     });
-    const firstLocked = LEVELS.findIndex((_, lv) => !unlocked(lv));
-    $("level-hint").innerHTML = firstLocked < 0
-      ? "Semua tingkat sudah terbuka. Hebat!"
-      : `<b>Tingkat ${firstLocked + 1}</b> terbuka setelah kamu benar minimal <b>${need(firstLocked - 1)} dari ${LEVELS[firstLocked - 1].count} soal</b> (85%) di Tingkat ${firstLocked}.`;
+    $("level-hint").innerHTML = "Semua tingkat terbuka. Pilih tingkat mana saja; tingkat dinyatakan <b>lulus</b> jika benar minimal 85% soal.";
     $("st-q").textContent = state.done ? "–" : `${state.i + 1}`;
     $("st-done").textContent = `${answeredCount()}/${n}`;
     $("st-ok").textContent = state.correct;
@@ -1775,10 +1772,8 @@
     const gate = next === null
       ? (passed ? `<p class="gate ok">Kamu sudah menamatkan semua tingkat dengan benar ${nilaiOf(c, n)}%. Luar biasa!</p>` : "")
       : passed
-        ? `<p class="gate ok">Selamat! Kamu benar <b>${nilaiOf(c, n)}%</b> dan membuka <b>Tingkat ${next + 1} (${LEVELS[next].name})</b>.</p>`
-        : unlocked(next)
-          ? `<p class="gate">Tingkat ${next + 1} sudah terbuka dari hasil sebelumnya. Untuk lulus ronde ini perlu benar minimal ${req} dari ${n} soal (85%).</p>`
-          : `<p class="gate no">Untuk membuka <b>Tingkat ${next + 1}</b>, kamu perlu benar minimal <b>${req} dari ${n} soal</b> (85%). Kamu benar ${c}, kurang ${req - c} soal lagi. Coba lagi ya!</p>`;
+        ? `<p class="gate ok">Selamat! Kamu benar <b>${nilaiOf(c, n)}%</b> dan <b>lulus Tingkat ${state.level + 1}</b>. Siap mencoba Tingkat ${next + 1} (${LEVELS[next].name})?</p>`
+        : `<p class="gate no">Untuk lulus Tingkat ${state.level + 1}, perlu benar minimal <b>${req} dari ${n} soal</b> (85%). Kamu benar ${c}, kurang ${req - c} soal lagi. Coba lagi, atau lanjut ke tingkat lain.</p>`;
     board.innerHTML = `
       <div class="result">
         <span class="chip">Tingkat ${state.level + 1} · ${LEVELS[state.level].name} selesai</span>
