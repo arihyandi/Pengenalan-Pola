@@ -16,7 +16,7 @@ Buka `index.html` di browser. Tidak perlu internet atau instalasi, kecuali untuk
 - Pekerjaan tersimpan otomatis di perangkat. Jika halaman ditutup, siswa pindah tingkat, atau keluar lalu masuk lagi dengan nama dan kelas yang sama, pekerjaannya dilanjutkan dari posisi terakhir.
 - Ronde selesai saat semua soal sudah dijawab. Tombol **Selesai sekarang** menyelesaikan lebih awal, dan soal yang belum dijawab dihitung salah.
 - Setelah menjawab, muncul penjelasan aturan polanya.
-- Di akhir ronde ada skor, bintang (maksimal 3), dan skor terbaik per tingkat. Tingkat berikutnya terkunci sampai siswa benar minimal **85%** dari seluruh soal di tingkat sebelumnya (Tingkat 1: 13/15, Tingkat 2: 14/16, Tingkat 3: 15/17, Tingkat 4: 16/18). Kemajuan ini dicatat per siswa (nama + kelas) di perangkat yang dipakai.
+- Di akhir ronde ada skor, bintang (maksimal 3), dan skor terbaik per tingkat. Tingkat berikutnya terkunci sampai siswa benar minimal **85%** dari seluruh soal di tingkat sebelumnya (Tingkat 1: 15/17, Tingkat 2: 17/19, Tingkat 3: 18/21, Tingkat 4: 20/23). Kemajuan ini dicatat per siswa (nama + kelas) di perangkat yang dipakai.
 
 ## Tingkatan dan jenis pola
 
@@ -24,11 +24,11 @@ Soal disusun untuk siswa **SD kelas 4–6**. Angka yang dipakai tetap kecil, dar
 
 | Tingkat | Soal | Jenis pola |
 |---------|------|------------|
-| 1 · Sangat Mudah | 15 | Warna berulang (AB), bentuk berulang (AB), gambar buah/hewan, ukuran besar–kecil, bilangan +1/+2, huruf berurutan, jumlah titik +1 |
-| 2 · Mudah | 16 | Warna dan bentuk (AAB, ABB, ABC), gambar ABC, ukuran, bilangan ditambah 2–5, bilangan dikurangi 1–3, huruf melompat 2, titik +2, kelipatan 2, 5, dan 10 |
-| 3 · Sedang | 17 | Pola ganda (bentuk + warna), putaran panah 90°, kelipatan 3, 4, dan 6, bilangan dikurangi, pola bertumbuh (+1, +2, +3, ...), huruf mundur, angka hilang di tengah, gambar ABCD |
-| 4 · Sulit | 18 | Dikali 2 (1, 2, 4, 8, ...), nilai tempat ×10 (7, 70, 700, ...), selang-seling (+3 lalu −1), bilangan kuadrat kecil, angka hilang di tengah, pola ganda hilang di tengah, huruf + angka (A1, B2, C3), huruf selang-seling (A, Z, B, Y), putaran 45° |
-| 5 · Sangat Sulit | 20 | Fibonacci (1, 1, 2, 3, 5, ...), bilangan segitiga, bilangan prima kecil, dua deret diselipkan, huruf bertumbuh, putaran + warna, pangkat tiga (1, 8, 27, ...), pola ganda dan Fibonacci hilang di tengah, kelipatan 7, 8, dan 9 |
+| 1 · Sangat Mudah | 17 | Warna berulang (AB), bentuk berulang (AB), gambar buah/hewan, ukuran besar–kecil, bilangan +1/+2, huruf berurutan, jumlah titik +1 |
+| 2 · Mudah | 19 | Warna dan bentuk (AAB, ABB, ABC), gambar ABC, ukuran, bilangan ditambah 2–5, bilangan dikurangi 1–3, huruf melompat 2, titik +2, kelipatan 2, 5, dan 10 |
+| 3 · Sedang | 21 | Pola ganda (bentuk + warna), putaran panah 90°, kelipatan 3, 4, dan 6, bilangan dikurangi, pola bertumbuh (+1, +2, +3, ...), huruf mundur, angka hilang di tengah, gambar ABCD |
+| 4 · Sulit | 23 | Dikali 2 (1, 2, 4, 8, ...), nilai tempat ×10 (7, 70, 700, ...), selang-seling (+3 lalu −1), bilangan kuadrat kecil, angka hilang di tengah, pola ganda hilang di tengah, huruf + angka (A1, B2, C3), huruf selang-seling (A, Z, B, Y), putaran 45° |
+| 5 · Sangat Sulit | 25 | Fibonacci (1, 1, 2, 3, 5, ...), bilangan segitiga, bilangan prima kecil, dua deret diselipkan, huruf bertumbuh, putaran + warna, pangkat tiga (1, 8, 27, ...), pola ganda dan Fibonacci hilang di tengah, kelipatan 7, 8, dan 9 |
 
 ## Raport
 

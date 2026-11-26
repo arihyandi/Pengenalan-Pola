@@ -820,7 +820,7 @@
       </div>
       <img class="school-logo" src="assets/logo-kalam-kudus.png" width="320" height="284" alt="Logo Kalam Kudus">
     </div>
-    <p class="lede">Amati urutannya, temukan aturan yang berulang, lalu pilih yang mengisi kotak bertanda&nbsp;<b>?</b>. Untuk siswa SD kelas 4–6: ada 5 tingkat, masing-masing berisi 15–20 soal gambar, angka, dan huruf.</p>
+    <p class="lede">Amati urutannya, temukan aturan yang berulang, lalu pilih yang mengisi kotak bertanda&nbsp;<b>?</b>. Untuk siswa SD kelas 4–6: ada 5 tingkat, masing-masing berisi 17–25 soal gambar, angka, dan huruf.</p>
     <div class="userbar" id="userbar" hidden>
       <span class="who" id="who"></span>
       <div class="userbar-actions">
@@ -883,7 +883,7 @@
       <div class="hero-demo" id="hero-demo" aria-hidden="true"></div>
       <ul class="hero-chips">
         <li><b>5</b> tingkat</li>
-        <li><b>15–20</b> soal per tingkat</li>
+        <li><b>17–25</b> soal per tingkat</li>
         <li>SD kelas <b>4–6</b></li>
         <li>Raport <b>A–D</b></li>
       </ul>
@@ -1029,7 +1029,7 @@
       <ul>
         <li>Minta siswa menyebutkan aturannya dengan kata-kata sendiri sebelum menekan jawaban.</li>
         <li>Baca penjelasan setelah setiap soal, lalu diskusikan.</li>
-        <li>Tingkat berikutnya terkunci sampai siswa benar minimal 85% dari seluruh soal di tingkat sebelumnya (Tingkat 1: 13/15, Tingkat 2: 14/16, Tingkat 3: 15/17, Tingkat 4: 16/18).</li>
+        <li>Tingkat berikutnya terkunci sampai siswa benar minimal 85% dari seluruh soal di tingkat sebelumnya (Tingkat 1: 15/17, Tingkat 2: 17/19, Tingkat 3: 18/21, Tingkat 4: 20/23).</li>
         <li>Buka <b>Riwayat → Semua siswa</b> untuk melihat jawaban seluruh siswa yang bermain di perangkat ini, lalu unduh sebagai CSV.</li>
         <li>Soal yang sulit bisa dilewati dulu. Nomor kuning di <b>Daftar soal</b> menandai soal yang dilewati. Pekerjaan tersimpan otomatis, jadi siswa bisa menutup halaman lalu melanjutkan lagi.</li>
         <li>Buka <b>Raport</b> untuk melihat nilai akhir, predikat (A di atas 90, B di atas 80, C di atas 70, D 70 ke bawah), dan peringkat kelas.</li>
@@ -1432,28 +1432,28 @@
   // ke kelipatan dan nilai tempat, sampai pola bilangan khusus yang masih kecil.
   const LEVELS = [
     {
-      name: "Sangat Mudah", count: 15,
+      name: "Sangat Mudah", count: 17,
       gens: [genWarna(["AB"]), genBentuk(["AB"]), genGambar(["AB", "AAB"]), genUkuran(["BK"]),
         genTambah(1, 5, 1, 2), genHuruf(1, 1), genTitik([1])],
     },
     {
-      name: "Mudah", count: 16,
+      name: "Mudah", count: 19,
       gens: [genWarna(["AAB", "ABB", "ABC"]), genBentuk(["ABC", "AAB", "ABB"]), genGambar(["ABC", "ABB", "AABB"]),
         genUkuran(["BBK", "BKK"]), genTambah(1, 10, 2, 5), genKurang(1, 3, 6), genHuruf(2, 2), genTitik([2]),
         genKelipatan([2, 5, 10])],
     },
     {
-      name: "Sedang", count: 17,
+      name: "Sedang", count: 21,
       gens: [genKombinasi(false), genRotasi([90, -90]), genKelipatan([3, 4, 6]), genKurang(2, 5, 15), genBertumbuh,
         genHurufMundur(1, 1), genTengah(2, 5), genGambar(["ABCD", "AABC"])],
     },
     {
-      name: "Sulit", count: 18,
+      name: "Sulit", count: 23,
       gens: [genGeometri, genKali10, genSelang, genKuadrat, genTengah(6, 10), genKombinasi(true),
         genHurufAngka, genHurufSelang, genRotasi([45, -45])],
     },
     {
-      name: "Sangat Sulit", count: 20,
+      name: "Sangat Sulit", count: 25,
       gens: [genFibo(false), genSegitiga, genPrima, genDuaDeret, genHurufTumbuh, genRotasiWarna,
         genKubik, genKombinasi(true), genFibo(true), genKelipatan([7, 8, 9])],
     },
@@ -1527,7 +1527,11 @@
   const PASS = 0.85;
   const need = (lv) => Math.ceil(LEVELS[lv].count * PASS - 1e-9);
   const bestOf = (lv) => (ls.get(K_BEST, {})[userKey(user)] || {})[lv];
-  const unlocked = (lv) => lv === 0 || (bestOf(lv - 1) ?? -1) >= need(lv - 1);
+  // Lulus menurut riwayat (memakai jumlah soal ronde itu), agar tingkat yang sudah terbuka
+  // tetap terbuka walaupun jumlah soal per tingkat berubah.
+  const lulusDiRiwayat = (lv) => loadHist().some((r) => r.selesai && r.level === lv && userKey(r) === userKey(user) &&
+    r.total > 0 && r.benar >= Math.ceil(r.total * PASS - 1e-9));
+  const unlocked = (lv) => lv === 0 || (bestOf(lv - 1) ?? -1) >= need(lv - 1) || lulusDiRiwayat(lv - 1);
   const MAX_ROUNDS = 300;
   // Kelas digabung tanpa membedakan huruf besar/kecil; nama siswa dicatat apa adanya.
   const userKey = (u) => String(u.nama).replace(/\s+/g, " ").trim() + "|" + String(u.kelas).replace(/\s+/g, " ").trim().toUpperCase();
