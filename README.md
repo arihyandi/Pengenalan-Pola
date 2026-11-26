@@ -16,7 +16,7 @@ Buka `index.html` di browser. Tidak perlu internet atau instalasi, kecuali untuk
 - Pekerjaan tersimpan otomatis di perangkat. Jika halaman ditutup, siswa pindah tingkat, atau keluar lalu masuk lagi dengan nama dan kelas yang sama, pekerjaannya dilanjutkan dari posisi terakhir.
 - Ronde selesai saat semua soal sudah dijawab. Tombol **Selesai sekarang** menyelesaikan lebih awal, dan soal yang belum dijawab dihitung salah.
 - Setelah menjawab, muncul penjelasan aturan polanya.
-- Di akhir ronde ada skor, bintang (maksimal 3), dan skor terbaik per tingkat. Tingkat berikutnya terkunci sampai siswa benar minimal **85%** dari seluruh soal di tingkat sebelumnya (Tingkat 1: 13/15, Tingkat 2: 14/16, Tingkat 3: 15/17, Tingkat 4: 16/18). Kemajuan ini dicatat per siswa (nama + kelas) di perangkat yang dipakai.
+- Di akhir ronde ada skor, bintang (maksimal 3), dan skor terbaik per tingkat. Semua tingkat terbuka sejak awal; tingkat dinyatakan **lulus** jika benar minimal **85%** soal (Tingkat 1: 13/15, Tingkat 2: 14/16, Tingkat 3: 15/17, Tingkat 4: 16/18, Tingkat 5: 17/20).
 
 ## Tingkatan dan jenis pola
 
